@@ -16,13 +16,13 @@ grouped_data = data.groupby('Component').apply(lambda x: x[['Chromosome', 'Posit
 
 # environment for Jinja2
 env = Environment(loader=FileSystemLoader(searchpath=''))
-template = env.get_template('index.html')  # You need to create a template.html file
+template = env.get_template('template.html')  # You need to create a template.html file
 
 # Render the template with grouped data
 html_content = template.render(components=grouped_data)
 
 # Save the HTML content to a file
-with open('components_traits.html', 'w') as file:
+with open('index.html', 'w') as file:
     file.write(html_content)
 
 print('HTML file created successfully!')
