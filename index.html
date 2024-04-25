@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IC Components Traits</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #manhattanPlot {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var components = {{ components | tojson | safe }};
+            
+            function updateTable(selectedComponent) {
+                const detailsTableBody = document.getElementById('detailsTableBody');
+                const componentTitleSpan = document.getElementById('selectedComponentTitle');
+                const componentData = components[selectedComponent];
+                detailsTableBody.innerHTML = '';
+                componentTitleSpan.textContent = ` - ${selectedComponent}`; // Set the selected component title
+                
+                if (componentData) {
+                    componentData.forEach(function(trait) {
+                        let row = `<tr>
+                                        <td>${trait['Chromosome']}</td>
+                                        <td>${trait['Position']}</td>
+                                        <td>${trait['Trait']}</td>
+                                    </tr>`;
+                        detailsTableBody.innerHTML += row;
+                    });
+                }
+                document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.txt.png';
+            }
+            
+            var initialComponent = {{ components.keys() | list | safe }}[0];
+            updateTable(initialComponent); // Initialize with the first component's data
+            
+            document.getElementById('componentSelect').addEventListener('change', function() {
+                updateTable(this.value);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
+
+    <img id="manhattanPlot" src="" alt="Manhattan Plot">
+    
+    <label for="componentSelect">Select Component:</label>
+    <select id="componentSelect">
+        <option value="">--Select a Component--</option>
+        {% for component in components %}
+        <option value="{{ component }}">{{ component }}</option>
+        {% endfor %}
+    </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Trait</th>
+            </tr>
+        </thead>
+        <tbody id="detailsTableBody">
+            <!-- Content will be populated by JavaScript -->
+        </tbody>
+    </table>
+</body>
+</html>
