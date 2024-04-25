@@ -29,38 +29,6 @@
             margin-bottom: 20px;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var components = {{ components | tojson | safe }};
-            
-            function updateTable(selectedComponent) {
-                const detailsTableBody = document.getElementById('detailsTableBody');
-                const componentTitleSpan = document.getElementById('selectedComponentTitle');
-                const componentData = components[selectedComponent];
-                detailsTableBody.innerHTML = '';
-                componentTitleSpan.textContent = ` - ${selectedComponent}`; // Set the selected component title
-                
-                if (componentData) {
-                    componentData.forEach(function(trait) {
-                        let row = `<tr>
-                                        <td>${trait['Chromosome']}</td>
-                                        <td>${trait['Position']}</td>
-                                        <td>${trait['Trait']}</td>
-                                    </tr>`;
-                        detailsTableBody.innerHTML += row;
-                    });
-                }
-                document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.txt.png';
-            }
-            
-            var initialComponent = {{ components.keys() | list | safe }}[0];
-            updateTable(initialComponent); // Initialize with the first component's data
-            
-            document.getElementById('componentSelect').addEventListener('change', function() {
-                updateTable(this.value);
-            });
-        });
-    </script>
 </head>
 <body>
     <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
@@ -70,9 +38,7 @@
     <label for="componentSelect">Select Component:</label>
     <select id="componentSelect">
         <option value="">--Select a Component--</option>
-        {% for component in components %}
-        <option value="{{ component }}">{{ component }}</option>
-        {% endfor %}
+        <!-- Options will be populated by JavaScript -->
     </select>
 
     <table>
@@ -87,5 +53,65 @@
             <!-- Content will be populated by JavaScript -->
         </tbody>
     </table>
+
+    <script>
+        // Helper function to sort IC components numerically
+        function sortICComponents(components) {
+            return components.sort((a, b) => {
+                return parseInt(a.match(/IC(\d+)/)[1], 10) - parseInt(b.match(/IC(\d+)/)[1], 10);
+            });
+        }
+
+        // Helper function to sort chromosome numbers numerically
+        function sortChromosomeData(componentData) {
+            return componentData.sort((a, b) => parseInt(a.Chromosome, 10) - parseInt(b.Chromosome, 10));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('components.json')  // Assuming you have a components.json in your repository
+                .then(response => response.json())
+                .then(components => {
+                    // Sort components and populate the dropdown
+                    var sortedComponents = sortICComponents(Object.keys(components));
+                    var select = document.getElementById('componentSelect');
+                    sortedComponents.forEach(function(key) {
+                        var option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = key;
+                        select.appendChild(option);
+                    });
+
+                    // Function to update the table
+                    function updateTable(selectedComponent) {
+                        const detailsTableBody = document.getElementById('detailsTableBody');
+                        const componentTitleSpan = document.getElementById('selectedComponentTitle');
+                        let componentData = sortChromosomeData(components[selectedComponent]);
+                        detailsTableBody.innerHTML = '';
+                        componentTitleSpan.textContent = ` - ${selectedComponent}`;
+                        
+                        componentData.forEach(function(trait) {
+                            let row = `<tr>
+                                            <td>${trait['Chromosome']}</td>
+                                            <td>${trait['Position']}</td>
+                                            <td>${trait['Trait']}</td>
+                                        </tr>`;
+                            detailsTableBody.innerHTML += row;
+                        });
+                        document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.txt.png';
+                    }
+
+                    // Initialize with the first sorted component's data
+                    updateTable(sortedComponents[0]);
+
+                    // Event listener for dropdown changes
+                    document.getElementById('componentSelect').addEventListener('change', function() {
+                        updateTable(this.value);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading the components data:', error);
+                });
+        });
+    </script>
 </body>
 </html>
