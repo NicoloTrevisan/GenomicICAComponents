@@ -68,6 +68,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Assuming 'components' is defined somewhere or passed from a server
             var components = {{ components | tojson | safe }};
             
             function updateTable(selectedComponent) {
