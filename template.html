@@ -23,16 +23,55 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        #manhattanPlot {
+        img.plot {
             width: 100%;
             height: auto;
             margin-bottom: 20px;
+            display: none; /* Start with plots hidden */
+        }
+        #plotControls button {
+            margin-right: 5px;
         }
     </style>
+</head>
+<body>
+    <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
+
+    <div id="plotControls">
+        <button id="showManhattan">Show Manhattan Plot</button>
+        <button id="showIDP">Show IDP Plot</button>
+    </div>
+
+    <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
+    <img id="idpPlot" class="plot" src="" alt="IDP Plot">
+    
+    <label for="componentSelect">Select Component:</label>
+    <select id="componentSelect">
+        <option value="">--Select a Component--</option>
+    </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Trait</th>
+            </tr>
+        </thead>
+        <tbody id="detailsTableBody">
+            <!-- Content will be populated by JavaScript -->
+        </tbody>
+    </table>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var components = {{ components | tojson | safe }};
             
+            function showPlot(plotId) {
+                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
+                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+            }
+
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
                 const componentTitleSpan = document.getElementById('selectedComponentTitle');
@@ -51,41 +90,38 @@
                     });
                 }
                 document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.txt.png';
+                document.getElementById('idpPlot').src = '_ICA_IDP_Plots/IC' + selectedComponent.replace('IC', '') + '_plot.png';
+                showPlot('manhattanPlot'); // Default to show Manhattan plot first
             }
-            
-            var initialComponent = {{ components.keys() | list | safe }}[0];
-            updateTable(initialComponent); // Initialize with the first component's data
-            
-            document.getElementById('componentSelect').addEventListener('change', function() {
+
+            // Populate the component selector dynamically
+            var componentSelect = document.getElementById('componentSelect');
+            Object.keys(components).forEach(function(component) {
+                var option = document.createElement('option');
+                option.value = component;
+                option.textContent = component;
+                componentSelect.appendChild(option);
+            });
+
+            // Initialize with the first component's data if available
+            var initialComponent = Object.keys(components)[0];
+            if (initialComponent) {
+                updateTable(initialComponent);
+                componentSelect.value = initialComponent;
+            }
+
+            componentSelect.addEventListener('change', function() {
                 updateTable(this.value);
+            });
+
+            document.getElementById('showManhattan').addEventListener('click', function() {
+                showPlot('manhattanPlot');
+            });
+
+            document.getElementById('showIDP').addEventListener('click', function() {
+                showPlot('idpPlot');
             });
         });
     </script>
-</head>
-<body>
-    <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
-
-    <img id="manhattanPlot" src="" alt="Manhattan Plot">
-    
-    <label for="componentSelect">Select Component:</label>
-    <select id="componentSelect">
-        <option value="">--Select a Component--</option>
-        {% for component in components %}
-        <option value="{{ component }}">{{ component }}</option>
-        {% endfor %}
-    </select>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Chromosome</th>
-                <th>Position</th>
-                <th>Trait</th>
-            </tr>
-        </thead>
-        <tbody id="detailsTableBody">
-            <!-- Content will be populated by JavaScript -->
-        </tbody>
-    </table>
 </body>
 </html>
