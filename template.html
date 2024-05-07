@@ -93,6 +93,7 @@
                 document.getElementById('idpPlot').src = '_ICA_IDP_Plots/IC' + selectedComponent.replace('IC', '') + '_plot.png';
                 showPlot('manhattanPlot'); // Default to show Manhattan plot first
             }
+<<<<<<< HEAD
 
             // Populate the component selector dynamically
             var componentSelect = document.getElementById('componentSelect');
@@ -111,6 +112,18 @@
             }
 
             componentSelect.addEventListener('change', function() {
+=======
+            
+            function showPlot(plotId) {
+                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
+                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+            }
+
+            var initialComponent = {{ components.keys() | list | safe }}[0];
+            updateTable(initialComponent); // Initialize with the first component's data
+            
+            document.getElementById('componentSelect').addEventListener('change', function() {
+>>>>>>> 9ff4370fc7a7da89baab8b37e4b8d6d50e0078d1
                 updateTable(this.value);
             });
 
@@ -123,5 +136,40 @@
             });
         });
     </script>
+<<<<<<< HEAD
+=======
+</head>
+<body>
+    <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
+
+    <div id="plotControls">
+        <button id="showManhattan">Show Manhattan Plot</button>
+        <button id="showIDP">Show IDP Plot</button>
+    </div>
+
+    <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
+    <img id="idpPlot" class="plot" src="" alt="IDP Plot">
+    
+    <label for="componentSelect">Select Component:</label>
+    <select id="componentSelect">
+        <option value="">--Select a Component--</option>
+        {% for component in components %}
+        <option value="{{ component }}">{{ component }}</option>
+        {% endfor %}
+    </select>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Trait</th>
+            </tr>
+        </thead>
+        <tbody id="detailsTableBody">
+            <!-- Content will be populated by JavaScript -->
+        </tbody>
+    </table>
+>>>>>>> 9ff4370fc7a7da89baab8b37e4b8d6d50e0078d1
 </body>
 </html>
