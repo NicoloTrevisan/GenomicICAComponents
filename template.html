@@ -23,10 +23,14 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        #manhattanPlot {
+        img.plot {
             width: 100%;
             height: auto;
             margin-bottom: 20px;
+            display: none; /* Start with plots hidden */
+        }
+        #plotControls button {
+            margin-right: 5px;
         }
     </style>
     <script>
@@ -51,13 +55,28 @@
                     });
                 }
                 document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.txt.png';
+                document.getElementById('idpPlot').src = '_ICA_IDP_Plots/IC' + selectedComponent.replace('IC', '') + '_plot.png';
+                showPlot('manhattanPlot'); // Default to show Manhattan plot first
             }
             
+            function showPlot(plotId) {
+                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
+                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+            }
+
             var initialComponent = {{ components.keys() | list | safe }}[0];
             updateTable(initialComponent); // Initialize with the first component's data
             
             document.getElementById('componentSelect').addEventListener('change', function() {
                 updateTable(this.value);
+            });
+
+            document.getElementById('showManhattan').addEventListener('click', function() {
+                showPlot('manhattanPlot');
+            });
+
+            document.getElementById('showIDP').addEventListener('click', function() {
+                showPlot('idpPlot');
             });
         });
     </script>
@@ -65,7 +84,13 @@
 <body>
     <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
 
-    <img id="manhattanPlot" src="" alt="Manhattan Plot">
+    <div id="plotControls">
+        <button id="showManhattan">Show Manhattan Plot</button>
+        <button id="showIDP">Show IDP Plot</button>
+    </div>
+
+    <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
+    <img id="idpPlot" class="plot" src="" alt="IDP Plot">
     
     <label for="componentSelect">Select Component:</label>
     <select id="componentSelect">
