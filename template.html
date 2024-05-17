@@ -51,9 +51,6 @@
     <label for="componentSelect">Select Component:</label>
     <select id="componentSelect">
         <option value="">--Select a Component--</option>
-        {% for component in components %}
-        <option value="{{ component }}">{{ component }}</option>
-        {% endfor %}
     </select>
 
     <label for="searchInput">Search Trait:</label>
@@ -80,6 +77,25 @@
             // Assuming 'components' is defined somewhere or passed from a server
             var components = {{ components | tojson | safe }};
             
+            function sortComponents(components) {
+                return Object.keys(components).sort((a, b) => {
+                    const numA = parseInt(a.replace('IC', ''), 10);
+                    const numB = parseInt(b.replace('IC', ''), 10);
+                    return numA - numB;
+                });
+            }
+
+            function populateComponentSelect(components) {
+                const componentSelect = document.getElementById('componentSelect');
+                const sortedComponents = sortComponents(components);
+                sortedComponents.forEach(function(component) {
+                    let option = document.createElement('option');
+                    option.value = component;
+                    option.text = component;
+                    componentSelect.appendChild(option);
+                });
+            }
+
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
                 const componentTitleSpan = document.getElementById('selectedComponentTitle');
@@ -135,9 +151,8 @@
                 }
             }
 
-            var initialComponent = Object.keys(components)[0];
-            updateTable(initialComponent); // Initialize with the first component's data
-            
+            populateComponentSelect(components);
+
             document.getElementById('componentSelect').addEventListener('change', function() {
                 updateTable(this.value);
             });
