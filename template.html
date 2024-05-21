@@ -90,6 +90,9 @@
         .autocomplete-suggestion:hover {
             background-color: #f0f0f0;
         }
+        .search-result-item {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="container">
@@ -215,7 +218,7 @@
                         if (foundComponents.length > 0) {
                             let resultHTML = '<h2>Search Results:</h2><ul class="list-group">';
                             foundComponents.forEach(function(comp) {
-                                resultHTML += `<li class="list-group-item">${comp}</li>`;
+                                resultHTML += `<li class="list-group-item search-result-item" data-component="${comp}">${comp}</li>`;
                             });
                             resultHTML += '</ul>';
                             searchResults.innerHTML = resultHTML;
@@ -223,10 +226,22 @@
                             searchResults.innerHTML = '<p class="text-danger">No components found with the specified trait.</p>';
                         }
                         loadingSpinner.classList.remove('active');
+                        addSearchResultClickHandlers(); // Add click handlers to the search results
                     }, 1000); // Adjust the timeout as needed
                 } else {
                     searchResults.innerHTML = '<p class="text-danger">Please enter a trait to search for.</p>';
                 }
+            }
+
+            function addSearchResultClickHandlers() {
+                document.querySelectorAll('.search-result-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const component = this.getAttribute('data-component');
+                        document.getElementById('componentSelect').value = component;
+                        updateTable(component);
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top for better visibility
+                    });
+                });
             }
 
             function autocomplete(input, suggestions) {
@@ -248,6 +263,7 @@
                         suggestionItem.addEventListener("click", function() {
                             input.value = this.getElementsByTagName("input")[0].value;
                             closeAllLists();
+                            searchTrait(input.value); // Automatically trigger search
                         });
                         suggestionList.appendChild(suggestionItem);
                     });
