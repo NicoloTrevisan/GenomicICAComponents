@@ -25,7 +25,7 @@
         #searchResults {
             margin-top: 20px;
         }
-        .btn-custom {
+        .btn-manhattan {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -34,8 +34,17 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .btn-idp {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
         .btn-custom:hover {
-            background-color: #45a049;
+            opacity: 0.9;
         }
         @media screen and (max-width: 600px) {
             .btn-custom {
@@ -46,14 +55,49 @@
                 font-size: 14px;
             }
         }
+        .sticky-top {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background-color: white;
+            padding: 10px 0;
+        }
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+        }
+        .loading-spinner.active {
+            display: block;
+        }
+        .hover-effect:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .autocomplete-suggestions {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: white;
+            position: absolute;
+            z-index: 1000;
+            width: calc(100% - 30px);
+            margin-left: 15px;
+        }
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .autocomplete-suggestion:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body class="container">
     <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
 
-    <div id="plotControls" class="mb-3">
-        <button id="showManhattan" class="btn btn-custom"><i class="fas fa-chart-bar"></i> Show Manhattan Plot</button>
-        <button id="showIDP" class="btn btn-custom"><i class="fas fa-chart-line"></i> Show IDP Plot</button>
+    <div id="plotControls" class="sticky-top mb-3">
+        <button id="showManhattan" class="btn btn-manhattan hover-effect">Show Manhattan Plot</button>
+        <button id="showIDP" class="btn btn-idp hover-effect">Show IDP Plot</button>
     </div>
 
     <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
@@ -70,9 +114,14 @@
         <div class="input-group-append">
             <button id="searchButton" class="btn btn-custom"><i class="fas fa-search"></i> Search</button>
         </div>
+        <div id="autocomplete-list" class="autocomplete-suggestions"></div>
     </div>
 
     <div id="searchResults"></div>
+
+    <div class="loading-spinner spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
 
     <table class="table table-striped table-bordered mt-3">
         <thead class="thead-light">
@@ -91,7 +140,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Assuming 'components' is defined somewhere or passed from a server
             var components = {{ components | tojson | safe }};
-            
+            var allTraits = new Set();
+
+            // Extract all unique traits from components
+            for (let component in components) {
+                components[component].forEach(function(trait) {
+                    allTraits.add(trait['Trait']);
+                });
+            }
+            allTraits = Array.from(allTraits);
+
             function sortComponents(components) {
                 return Object.keys(components).sort((a, b) => {
                     const numA = parseInt(a.replace('IC', ''), 10);
@@ -140,33 +198,108 @@
 
             function searchTrait(trait) {
                 const searchResults = document.getElementById('searchResults');
+                const loadingSpinner = document.querySelector('.loading-spinner');
                 searchResults.innerHTML = ''; // Clear previous results
                 
                 if (trait) {
-                    let foundComponents = [];
-                    for (let component in components) {
-                        let componentData = components[component];
-                        if (componentData.some(t => t['Trait'].toLowerCase().includes(trait.toLowerCase()))) {
-                            foundComponents.push(component);
+                    loadingSpinner.classList.add('active');
+                    setTimeout(() => { // Simulate network request delay
+                        let foundComponents = [];
+                        for (let component in components) {
+                            let componentData = components[component];
+                            if (componentData.some(t => t['Trait'].toLowerCase().includes(trait.toLowerCase()))) {
+                                foundComponents.push(component);
+                            }
                         }
-                    }
-                    
-                    if (foundComponents.length > 0) {
-                        let resultHTML = '<h2>Search Results:</h2><ul class="list-group">';
-                        foundComponents.forEach(function(comp) {
-                            resultHTML += `<li class="list-group-item">${comp}</li>`;
-                        });
-                        resultHTML += '</ul>';
-                        searchResults.innerHTML = resultHTML;
-                    } else {
-                        searchResults.innerHTML = '<p class="text-danger">No components found with the specified trait.</p>';
-                    }
+                        
+                        if (foundComponents.length > 0) {
+                            let resultHTML = '<h2>Search Results:</h2><ul class="list-group">';
+                            foundComponents.forEach(function(comp) {
+                                resultHTML += `<li class="list-group-item">${comp}</li>`;
+                            });
+                            resultHTML += '</ul>';
+                            searchResults.innerHTML = resultHTML;
+                        } else {
+                            searchResults.innerHTML = '<p class="text-danger">No components found with the specified trait.</p>';
+                        }
+                        loadingSpinner.classList.remove('active');
+                    }, 1000); // Adjust the timeout as needed
                 } else {
                     searchResults.innerHTML = '<p class="text-danger">Please enter a trait to search for.</p>';
                 }
             }
 
+            function autocomplete(input, suggestions) {
+                let currentFocus;
+                input.addEventListener("input", function() {
+                    const val = this.value;
+                    closeAllLists();
+                    if (!val) return false;
+                    currentFocus = -1;
+                    const suggestionList = document.createElement("DIV");
+                    suggestionList.setAttribute("id", this.id + "autocomplete-list");
+                    suggestionList.setAttribute("class", "autocomplete-suggestions");
+                    this.parentNode.appendChild(suggestionList);
+
+                    suggestions.filter(item => item.toLowerCase().includes(val.toLowerCase())).forEach(item => {
+                        const suggestionItem = document.createElement("DIV");
+                        suggestionItem.innerHTML = `<strong>${item.substr(0, val.length)}</strong>${item.substr(val.length)}`;
+                        suggestionItem.innerHTML += `<input type='hidden' value='${item}'>`;
+                        suggestionItem.addEventListener("click", function() {
+                            input.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        suggestionList.appendChild(suggestionItem);
+                    });
+                });
+
+                input.addEventListener("keydown", function(e) {
+                    let x = document.getElementById(this.id + "autocomplete-list");
+                    if (x) x = x.getElementsByTagName("div");
+                    if (e.keyCode === 40) {
+                        currentFocus++;
+                        addActive(x);
+                    } else if (e.keyCode === 38) {
+                        currentFocus--;
+                        addActive(x);
+                    } else if (e.keyCode === 13) {
+                        e.preventDefault();
+                        if (currentFocus > -1) {
+                            if (x) x[currentFocus].click();
+                        }
+                    }
+                });
+
+                function addActive(x) {
+                    if (!x) return false;
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = x.length - 1;
+                    x[currentFocus].classList.add("autocomplete-active");
+                }
+
+                function removeActive(x) {
+                    for (let i = 0; i < x.length; i++) {
+                        x[i].classList.remove("autocomplete-active");
+                    }
+                }
+
+                function closeAllLists(elmnt) {
+                    const x = document.getElementsByClassName("autocomplete-suggestions");
+                    for (let i = 0; i < x.length; i++) {
+                        if (elmnt !== x[i] && elmnt !== input) {
+                            x[i].parentNode.removeChild(x[i]);
+                        }
+                    }
+                }
+
+                document.addEventListener("click", function(e) {
+                    closeAllLists(e.target);
+                });
+            }
+
             populateComponentSelect(components);
+            autocomplete(document.getElementById("searchInput"), allTraits);
 
             document.getElementById('componentSelect').addEventListener('change', function() {
                 updateTable(this.value);
