@@ -134,9 +134,9 @@
         <option value="">--Select a Component--</option>
     </select>
 
-    <label for="searchInput" class="mt-3">Search Trait:</label>
+    <label for="searchInput" class="mt-3">Search Trait(s):</label>
     <div class="input-group mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Type a trait to search">
+        <input type="text" id="searchInput" class="form-control" placeholder="You can type multiple traits to search throught the components">
         <div class="input-group-append">
             <button id="searchButton" class="btn btn-custom"><i class="fas fa-search"></i> Search</button>
         </div>
@@ -238,18 +238,28 @@
                 document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
             }
 
-            function searchTrait(trait) {
+            function searchTrait(traits) {
                 const searchResults = document.getElementById('searchResults');
                 const loadingSpinner = document.querySelector('.loading-spinner');
                 searchResults.innerHTML = ''; // Clear previous results
                 
-                if (trait) {
+                if (traits) {
                     loadingSpinner.classList.add('active');
+
+                    // Split the input string by commas and trim whitespace
+                    const traitArray = traits.split(',').map(trait => trait.trim().toLowerCase());
+
                     setTimeout(() => { // Simulate network request delay
                         let foundComponents = [];
                         for (let component in components) {
                             let componentData = components[component];
-                            if (componentData.some(t => t['Trait'].toLowerCase().includes(trait.toLowerCase()))) {
+
+                            // Check if the component contains all specified traits
+                            const hasAllTraits = traitArray.every(trait =>
+                                componentData.some(t => t['Trait'].toLowerCase().includes(trait))
+                            );
+
+                            if (hasAllTraits) {
                                 foundComponents.push(component);
                             }
                         }
@@ -262,13 +272,13 @@
                             resultHTML += '</ul>';
                             searchResults.innerHTML = resultHTML;
                         } else {
-                            searchResults.innerHTML = '<p class="text-danger">No components found with the specified trait.</p>';
+                            searchResults.innerHTML = '<p class="text-danger">No components found with the specified traits.</p>';
                         }
                         loadingSpinner.classList.remove('active');
                         addSearchResultClickHandlers(); // Add click handlers to the search results
                     }, 1000); // Adjust the timeout as needed
                 } else {
-                    searchResults.innerHTML = '<p class="text-danger">Please enter a trait to search for.</p>';
+                    searchResults.innerHTML = '<p class="text-danger">Please enter traits to search for.</p>';
                 }
             }
 
@@ -292,17 +302,24 @@
                     closeAllLists();
                     if (!val) return false;
                     currentFocus = -1;
+
+                    // Get the last trait being typed for autocomplete suggestions
+                    const traits = val.split(',').map(trait => trait.trim());
+                    const currentTrait = traits[traits.length - 1].toLowerCase();
+
                     const suggestionList = document.createElement("DIV");
                     suggestionList.setAttribute("id", this.id + "autocomplete-list");
                     suggestionList.setAttribute("class", "autocomplete-suggestions");
                     this.parentNode.appendChild(suggestionList);
 
-                    suggestions.filter(item => item.toLowerCase().includes(val.toLowerCase())).forEach(item => {
+                    suggestions.filter(item => item.toLowerCase().includes(currentTrait)).forEach(item => {
                         const suggestionItem = document.createElement("DIV");
-                        suggestionItem.innerHTML = `<strong>${item.substr(0, val.length)}</strong>${item.substr(val.length)}`;
+                        suggestionItem.innerHTML = `<strong>${item.substr(0, currentTrait.length)}</strong>${item.substr(currentTrait.length)}`;
                         suggestionItem.innerHTML += `<input type='hidden' value='${item}'>`;
                         suggestionItem.addEventListener("click", function() {
-                            input.value = this.getElementsByTagName("input")[0].value;
+                            // Replace the last trait with the selected suggestion
+                            traits[traits.length - 1] = this.getElementsByTagName("input")[0].value;
+                            input.value = traits.join(', ') + ', ';
                             closeAllLists();
                             searchTrait(input.value); // Automatically trigger search
                         });
