@@ -29,8 +29,8 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px; /* Increased padding */
+            font-size: 18px; /* Increased font size */
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -38,8 +38,8 @@
             background-color: #007BFF;
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px; /* Increased padding */
+            font-size: 18px; /* Increased font size */
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -48,11 +48,19 @@
         }
         @media screen and (max-width: 600px) {
             .btn-custom {
-                font-size: 14px;
-                padding: 8px;
+                font-size: 16px; /* Increased font size */
+                padding: 12px 24px; /* Increased padding */
             }
             table, th, td {
-                font-size: 14px;
+                font-size: 16px; /* Increased font size */
+            }
+            #componentSelect, #searchInput {
+                font-size: 16px; /* Increased font size */
+                padding: 10px; /* Increased padding */
+            }
+            .autocomplete-suggestion {
+                font-size: 16px; /* Increased font size */
+                padding: 12px; /* Increased padding */
             }
         }
         .sticky-top {
@@ -90,7 +98,7 @@
         }
         .autocomplete-suggestions {
             border: 1px solid #ccc;
-            max-height: 150px;
+            max-height: 200px; /* Increased max-height */
             overflow-y: auto;
             background-color: white;
             position: absolute;
@@ -99,7 +107,7 @@
             margin-left: 15px;
         }
         .autocomplete-suggestion {
-            padding: 8px;
+            padding: 10px; /* Increased padding */
             cursor: pointer;
         }
         .autocomplete-suggestion:hover {
