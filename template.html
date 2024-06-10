@@ -114,6 +114,14 @@
         .btn-group {
             margin-bottom: 20px;
         }
+        table {
+            table-layout: fixed; /* Ensure table layout is fixed */
+            word-wrap: break-word; /* Ensure text wraps within table cells */
+        }
+        table th, table td {
+            word-wrap: break-word; /* Ensure text wraps within table cells */
+            white-space: normal; /* Ensure text wraps within table cells */
+        }
     </style>
 </head>
 <body class="container">
@@ -245,7 +253,15 @@
                 componentTitleSpan.textContent = ` - ${selectedComponent}`;
                 
                 if (componentData) {
-                    componentData['Traits'].forEach(function(trait) {
+                    // Sort traits by chromosome and position
+                    componentData['Traits'].sort((a, b) => {
+                        const chrA = parseInt(a['Chromosome']);
+                        const chrB = parseInt(b['Chromosome']);
+                        if (chrA !== chrB) {
+                            return chrA - chrB;
+                        }
+                        return parseInt(a['Position']) - parseInt(b['Position']);
+                    }).forEach(function(trait) {
                         let row = `<tr>
                                         <td>${trait['Chromosome']}</td>
                                         <td>${trait['Position']}</td>
