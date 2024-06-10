@@ -2,7 +2,7 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
 # Load the CSV files
-trait_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/all_combined_traits_without_imaging_and_repetition.csv')
+trait_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/Summary_traits.csv')
 gene_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/all_genes_combined.txt', sep='\t')
 
 # Ensure 'Component' columns are strings and extract only the "IC" part ("IC1", "IC2", etc.)
