@@ -99,6 +99,14 @@
             margin-bottom: 1rem;
             background-color: transparent;
         }
+        .position-cell {
+            max-width: 150px;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        .position-cell div {
+            margin-bottom: 4px;
+        }
         @media (max-width: 768px) {
             .btn-custom {
                 font-size: 14px;
@@ -218,13 +226,17 @@
             allGenes = Array.from(allGenes);
 
             // Populate component select
-            const componentSelect = document.getElementById('componentSelect');
-            for (let component in components) {
-                let option = document.createElement('option');
-                option.value = component;
-                option.textContent = component;
-                componentSelect.appendChild(option);
-            }
+const componentSelect = document.getElementById('componentSelect');
+const componentNumbers = Object.keys(components)
+    .map(key => parseInt(key.replace('IC', '')))
+    .sort((a, b) => a - b);
+
+componentNumbers.forEach(number => {
+    let option = document.createElement('option');
+    option.value = `IC${number}`;
+    option.textContent = `IC${number}`;
+    componentSelect.appendChild(option);
+});
 
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
@@ -247,7 +259,7 @@
                     }).forEach(function(trait) {
                         let row = `<tr>
                             <td>${trait['Chromosome']}</td>
-                            <td>${trait['Position']}</td>
+                            <td class="position-cell">${trait['Position'].split(';').map(pos => `<div>${pos}</div>`).join('')}</td>
                             <td>${trait['Trait']}</td>
                         </tr>`;
                         detailsTableBody.innerHTML += row;
@@ -365,7 +377,7 @@
                             closeAllLists();
                             searchTrait(input.value);
                         });
-                        suggestionList.appendChild(suggestionItem);
+                        suggestionListsuggestionList.appendChild(suggestionItem);
                     });
                 });
 
@@ -375,7 +387,7 @@
                     if (e.keyCode === 40) {
                         currentFocus++;
                         addActive(x);
-                    } else if (e.keyCode === 38) {} else if (e.keyCode === 38) {
+                    } else if (e.keyCode === 38) {
                         currentFocus--;
                         addActive(x);
                     } else if (e.keyCode === 13) {
