@@ -195,29 +195,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Comment section for each component -->
-        <div id="commentSection" class="mt-5">
-            <h2>Comments</h2>
-            <form id="commentForm">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email (not published)</label>
-                    <input type="email" class="form-control" id="email">
-                </div>
-                <div class="mb-3">
-                    <label for="message" class="form-label">Comment</label>
-                    <textarea class="form-control" id="message" rows="3" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-            <div id="commentList" class="mt-4">
-                <!-- Comments will be loaded here -->
-            </div>
-        </div>
     </div>
 
     <div class="loading-spinner spinner-border text-primary" role="status">
@@ -249,17 +226,17 @@
             allGenes = Array.from(allGenes);
 
             // Populate component select
-            const componentSelect = document.getElementById('componentSelect');
-            const componentNumbers = Object.keys(components)
-                .map(key => parseInt(key.replace('IC', '')))
-                .sort((a, b) => a - b);
+const componentSelect = document.getElementById('componentSelect');
+const componentNumbers = Object.keys(components)
+    .map(key => parseInt(key.replace('IC', '')))
+    .sort((a, b) => a - b);
 
-            componentNumbers.forEach(number => {
-                let option = document.createElement('option');
-                option.value = `IC${number}`;
-                option.textContent = `IC${number}`;
-                componentSelect.appendChild(option);
-            });
+componentNumbers.forEach(number => {
+    let option = document.createElement('option');
+    option.value = `IC${number}`;
+    option.textContent = `IC${number}`;
+    componentSelect.appendChild(option);
+});
 
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
@@ -309,9 +286,6 @@
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
                 document.getElementById('idpPlot').src = `ICA_IDP_Plots/IC${selectedComponent.replace('IC', '')}_plot.png`;
                 showPlot('manhattanPlot');
-
-                // Load Comments for the selected component
-                loadComments(selectedComponent);
 
                 setTimeout(() => {
                     loadingOverlay.classList.remove('active');
@@ -403,7 +377,7 @@
                             closeAllLists();
                             searchTrait(input.value);
                         });
-                        suggestionList.appendChild(suggestionItem);
+                        suggestionListsuggestionList.appendChild(suggestionItem);
                     });
                 });
 
@@ -479,54 +453,6 @@
             document.getElementById('searchButton').addEventListener('click', function() {
                 const searchInput = document.getElementById('searchInput').value;
                 searchTrait(searchInput);
-            });
-
-            function loadComments(component) {
-                const commentList = document.getElementById('commentList');
-                // Load comments for the specific component
-                fetch(`https://api.github.com/repos/NicoloTrevisan/GenomicICAComponents/issues/${component}/comments`)
-                    .then(response => response.json())
-                    .then(comments => {
-                        commentList.innerHTML = '';
-                        comments.forEach(comment => {
-                            const commentItem = document.createElement('div');
-                            commentItem.className = 'comment-item';
-                            commentItem.innerHTML = `
-                                <div class="comment-author">${comment.user.login}</div>
-                                <div class="comment-body">${comment.body}</div>
-                                <div class="comment-date">${new Date(comment.created_at).toLocaleString()}</div>
-                            `;
-                            commentList.appendChild(commentItem);
-                        });
-                    });
-            }
-
-            document.getElementById('commentForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const component = document.getElementById('componentSelect').value;
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const message = document.getElementById('message').value;
-
-                fetch(`https://api.github.com/repos/NicoloTrevisan/GenomicICAComponents/issues/${component}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN`
-                    },
-                    body: JSON.stringify({
-                        body: message,
-                        user: {
-                            login: name,
-                            email: email
-                        }
-                    })
-                })
-                .then(response => response.json())
-                .then(comment => {
-                    loadComments(component);
-                    document.getElementById('commentForm').reset();
-                });
             });
         });
     </script>
