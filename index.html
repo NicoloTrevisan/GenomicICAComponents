@@ -195,6 +195,18 @@
                 </table>
             </div>
         </div>
+
+        <!-- Comment section for each component -->
+        <div id="commentSection" class="mt-5">
+            <h2>Comments</h2>
+            <script src="https://utteranc.es/client.js"
+                    repo="NicoloTrevisan/GenomicICAComponents"
+                    issue-term="pathname"
+                    theme="github-light"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </div>
     </div>
 
     <div class="loading-spinner spinner-border text-primary" role="status">
@@ -226,17 +238,17 @@
             allGenes = Array.from(allGenes);
 
             // Populate component select
-const componentSelect = document.getElementById('componentSelect');
-const componentNumbers = Object.keys(components)
-    .map(key => parseInt(key.replace('IC', '')))
-    .sort((a, b) => a - b);
+            const componentSelect = document.getElementById('componentSelect');
+            const componentNumbers = Object.keys(components)
+                .map(key => parseInt(key.replace('IC', '')))
+                .sort((a, b) => a - b);
 
-componentNumbers.forEach(number => {
-    let option = document.createElement('option');
-    option.value = `IC${number}`;
-    option.textContent = `IC${number}`;
-    componentSelect.appendChild(option);
-});
+            componentNumbers.forEach(number => {
+                let option = document.createElement('option');
+                option.value = `IC${number}`;
+                option.textContent = `IC${number}`;
+                componentSelect.appendChild(option);
+            });
 
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
@@ -286,6 +298,20 @@ componentNumbers.forEach(number => {
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
                 document.getElementById('idpPlot').src = `ICA_IDP_Plots/IC${selectedComponent.replace('IC', '')}_plot.png`;
                 showPlot('manhattanPlot');
+
+                // Reload Utterances
+                var utterancesScript = document.querySelector('script[src="https://utteranc.es/client.js"]');
+                if (utterancesScript) {
+                    utterancesScript.remove();
+                }
+                var newScript = document.createElement('script');
+                newScript.src = 'https://utteranc.es/client.js';
+                newScript.setAttribute('repo', 'NicoloTrevisan/GenomicICAComponents');
+                newScript.setAttribute('issue-term', 'pathname');
+                newScript.setAttribute('theme', 'github-light');
+                newScript.crossOrigin = 'anonymous';
+                newScript.async = true;
+                document.getElementById('commentSection').appendChild(newScript);
 
                 setTimeout(() => {
                     loadingOverlay.classList.remove('active');
@@ -377,7 +403,7 @@ componentNumbers.forEach(number => {
                             closeAllLists();
                             searchTrait(input.value);
                         });
-                        suggestionListsuggestionList.appendChild(suggestionItem);
+                        suggestionList.appendChild(suggestionItem);
                     });
                 });
 
