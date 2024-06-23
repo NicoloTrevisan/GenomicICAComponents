@@ -2,79 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IC Components Traits</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
             padding: 20px;
         }
         h1 {
+            color: #007bff;
+            margin-bottom: 30px;
             text-align: center;
-            margin-bottom: 20px;
         }
-        img.plot {
+        .plot {
             width: 100%;
             height: auto;
             margin-bottom: 20px;
-            display: none; /* Start with plots hidden */
-        }
-        #searchResults {
-            margin-top: 20px;
-        }
-        .btn-manhattan, .btn-idp, .btn-traits, .btn-genes {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 15px 30px; /* Increased padding */
-            font-size: 18px; /* Increased font size */
-            border-radius: 12px;
+            display: none;
+            border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-right: 10px;
+        }
+        .btn-custom {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-manhattan, .btn-idp {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-traits {
+            background-color: #17a2b8;
+            color: white;
         }
         .btn-genes {
-            background-color: #007BFF;
+            background-color: #ffc107;
+            color: #333;
         }
         .btn-custom:hover {
-            opacity: 0.9;
-        }
-        @media screen and (max-width: 600px) {
-            .btn-custom {
-                font-size: 16px; /* Increased font size */
-                padding: 12px 24px; /* Increased padding */
-            }
-            table, th, td {
-                font-size: 16px; /* Increased font size */
-            }
-            #componentSelect, #searchInput {
-                font-size: 16px; /* Increased font size */
-                padding: 10px; /* Increased padding */
-            }
-            .autocomplete-suggestion {
-                font-size: 16px; /* Increased font size */
-                padding: 12px; /* Increased padding */
-            }
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .sticky-top {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 0;
-            z-index: 1020;
-            background-color: white;
-            padding: 10px 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .loading-spinner {
+        .loading-spinner, .loading-overlay {
             display: none;
-            margin: 20px auto;
         }
-        .loading-spinner.active {
-            display: block;
-        }
-        .loading-overlay {
-            display: none;
+        .loading-overlay.active {
+            display: flex;
             position: fixed;
             top: 0;
             left: 0;
@@ -85,142 +71,135 @@
             justify-content: center;
             align-items: center;
         }
-        .loading-overlay.active {
-            display: flex;
-        }
-        .hover-effect:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
         .autocomplete-suggestions {
-            border: 1px solid #ccc;
-            max-height: 200px; /* Increased max-height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
             overflow-y: auto;
             background-color: white;
-            position: absolute;
-            z-index: 1000;
-            width: calc(100% - 30px);
-            margin-left: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .autocomplete-suggestion {
-            padding: 10px; /* Increased padding */
+            padding: 10px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
         .autocomplete-suggestion:hover {
             background-color: #f0f0f0;
         }
         .search-result-item {
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .btn-group {
-            margin-bottom: 20px;
+        .search-result-item:hover {
+            background-color: #e9ecef;
         }
         table {
-            table-layout: fixed; /* Ensure table layout is fixed */
-            word-wrap: break-word; /* Ensure text wraps within table cells */
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
         }
-        table th, table td {
-            word-wrap: break-word; /* Ensure text wraps within table cells */
-            white-space: normal; /* Ensure text wraps within table cells */
+        @media (max-width: 768px) {
+            .btn-custom {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+            table {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
-<body class="container">
-    <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
+<body>
+    <div class="container">
+        <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
 
-    <div id="plotControls" class="sticky-top mb-3">
-        <button id="showManhattan" class="btn btn-manhattan hover-effect">Show Manhattan Plot</button>
-        <button id="showIDP" class="btn btn-idp hover-effect">Show IDP Plot</button>
-    </div>
-
-    <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
-    <img id="idpPlot" class="plot" src="" alt="IDP Plot">
-
-    <label for="componentSelect" class="mt-3">Select Component:</label>
-    <select id="componentSelect" class="form-control mb-3">
-        <option value="">--Select a Component--</option>
-        <option value="IC1">IC1</option>
-        <option value="IC2">IC2</option>
-        <option value="IC3">IC3</option>
-        <option value="IC4">IC4</option>
-        <option value="IC5">IC5</option>
-        <option value="IC6">IC6</option>
-        <option value="IC7">IC7</option>
-        <option value="IC8">IC8</option>
-        <option value="IC9">IC9</option>
-        <option value="IC10">IC10</option>
-        <option value="IC11">IC11</option>
-        <option value="IC12">IC12</option>
-        <option value="IC13">IC13</option>
-        <option value="IC14">IC14</option>
-        <option value="IC15">IC15</option>
-        <option value="IC16">IC16</option>
-    </select>
-
-    <label for="searchInput" class="mt-3">Search Trait(s) and/or Gene(s):</label>
-    <div class="input-group mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="You can type multiple traits or genes to search through the components">
-        <div class="input-group-append">
-            <button id="searchButton" class="btn btn-custom"><i class="fas fa-search"></i> Search</button>
+        <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center">
+            <button id="showManhattan" class="btn btn-custom btn-manhattan me-2">Show Manhattan Plot</button>
+            <button id="showIDP" class="btn btn-custom btn-idp">Show IDP Plot</button>
         </div>
-        <div id="autocomplete-list" class="autocomplete-suggestions"></div>
-    </div>
 
-    <div id="searchResults"></div>
+        <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
+        <img id="idpPlot" class="plot" src="" alt="IDP Plot">
+
+        <div class="mb-3">
+            <label for="componentSelect" class="form-label">Select Component:</label>
+            <select id="componentSelect" class="form-select">
+                <option value="">--Select a Component--</option>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="searchInput" class="form-label">Search Trait(s) and/or Gene(s):</label>
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Type multiple traits or genes">
+                <button id="searchButton" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            </div>
+            <div id="autocomplete-list" class="autocomplete-suggestions"></div>
+        </div>
+
+        <div id="searchResults" class="mb-3"></div>
+
+        <div class="d-flex justify-content-center mb-3">
+            <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
+            <button id="showGenes" class="btn btn-custom btn-genes">Show Genes</button>
+        </div>
+
+        <div id="traitsSection">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Chromosome</th>
+                            <th>Position</th>
+                            <th>Trait</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailsTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="genesSection" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ENSG</th>
+                            <th>Symbol</th>
+                            <th>Chromosome</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Strand</th>
+                            <th>Type</th>
+                            <th>EntrezID</th>
+                            <th>HUGO</th>
+                            <th>pLI</th>
+                            <th>ncRVIS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="genesTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <div class="loading-spinner spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="visually-hidden">Loading...</span>
     </div>
 
-    <!-- Full-Screen Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-    <div class="btn-group">
-        <button id="showTraits" class="btn btn-traits hover-effect">Show Traits</button>
-        <button id="showGenes" class="btn btn-genes hover-effect">Show Genes</button>
-    </div>
-
-    <div id="traitsSection">
-        <table class="table table-striped table-bordered mt-3">
-            <thead class="thead-light">
-                <tr>
-                    <th>Chromosome</th>
-                    <th>Position</th>
-                    <th>Trait</th>
-                </tr>
-            </thead>
-            <tbody id="detailsTableBody">
-                <!-- Content will be populated by JavaScript -->
-            </tbody>
-        </table>
-    </div>
-
-    <div id="genesSection" style="display: none;">
-        <table class="table table-striped table-bordered mt-3">
-            <thead class="thead-light">
-                <tr>
-                    <th>ENSG</th>
-                    <th>Symbol</th>
-                    <th>Chromosome</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Strand</th>
-                    <th>Type</th>
-                    <th>EntrezID</th>
-                    <th>HUGO</th>
-                    <th>pLI</th>
-                    <th>ncRVIS</th>
-                </tr>
-            </thead>
-            <tbody id="genesTableBody">
-                <!-- Content will be populated by JavaScript -->
-            </tbody>
-        </table>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var components = {{ components | tojson | safe }};
@@ -238,65 +217,67 @@
             allTraits = Array.from(allTraits);
             allGenes = Array.from(allGenes);
 
+            // Populate component select
+            const componentSelect = document.getElementById('componentSelect');
+            for (let component in components) {
+                let option = document.createElement('option');
+                option.value = component;
+                option.textContent = component;
+                componentSelect.appendChild(option);
+            }
+
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
                 const genesTableBody = document.getElementById('genesTableBody');
                 const componentTitleSpan = document.getElementById('selectedComponentTitle');
-                const loadingSpinner = document.querySelector('.loading-spinner');
                 const loadingOverlay = document.getElementById('loadingOverlay');
-                loadingSpinner.classList.add('active'); // Show spinner
-                loadingOverlay.classList.add('active'); // Show overlay
+                loadingOverlay.classList.add('active');
 
                 const componentData = components[selectedComponent];
                 detailsTableBody.innerHTML = '';
                 genesTableBody.innerHTML = '';
                 componentTitleSpan.textContent = ` - ${selectedComponent}`;
-                
+
                 if (componentData) {
-                    // Sort traits by chromosome and position
                     componentData['Traits'].sort((a, b) => {
                         const chrA = parseInt(a['Chromosome']);
                         const chrB = parseInt(b['Chromosome']);
-                        if (chrA !== chrB) {
-                            return chrA - chrB;
-                        }
+                        if (chrA !== chrB) return chrA - chrB;
                         return parseInt(a['Position']) - parseInt(b['Position']);
                     }).forEach(function(trait) {
                         let row = `<tr>
-                                        <td>${trait['Chromosome']}</td>
-                                        <td>${trait['Position']}</td>
-                                        <td>${trait['Trait']}</td>
-                                    </tr>`;
+                            <td>${trait['Chromosome']}</td>
+                            <td>${trait['Position']}</td>
+                            <td>${trait['Trait']}</td>
+                        </tr>`;
                         detailsTableBody.innerHTML += row;
                     });
 
                     componentData['Genes'].forEach(function(gene) {
                         let row = `<tr>
-                                        <td>${gene['ensg']}</td>
-                                        <td>${gene['symbol']}</td>
-                                        <td>${gene['chr']}</td>
-                                        <td>${gene['start']}</td>
-                                        <td>${gene['end']}</td>
-                                        <td>${gene['strand']}</td>
-                                        <td>${gene['type']}</td>
-                                        <td>${gene['entrezID']}</td>
-                                        <td>${gene['HUGO']}</td>
-                                        <td>${gene['pLI']}</td>
-                                        <td>${gene['ncRVIS']}</td>
-                                    </tr>`;
+                            <td>${gene['ensg']}</td>
+                            <td>${gene['symbol']}</td>
+                            <td>${gene['chr']}</td>
+                            <td>${gene['start']}</td>
+                            <td>${gene['end']}</td>
+                            <td>${gene['strand']}</td>
+                            <td>${gene['type']}</td>
+                            <td>${gene['entrezID']}</td>
+                            <td>${gene['HUGO']}</td>
+                            <td>${gene['pLI']}</td>
+                            <td>${gene['ncRVIS']}</td>
+                        </tr>`;
                         genesTableBody.innerHTML += row;
                     });
                 }
 
-                document.getElementById('manhattanPlot').src = 'Manhattan_Plots/Manhattan_' + selectedComponent + '.png';
-                document.getElementById('idpPlot').src = 'ICA_IDP_Plots/IC' + selectedComponent.replace('IC', '') + '_plot.png';
+                document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
+                document.getElementById('idpPlot').src = `ICA_IDP_Plots/IC${selectedComponent.replace('IC', '')}_plot.png`;
                 showPlot('manhattanPlot');
-                
-                // Hide spinner and overlay after data is loaded
+
                 setTimeout(() => {
-                    loadingSpinner.classList.remove('active');
                     loadingOverlay.classList.remove('active');
-                }, 500); // Adjust the timeout as needed
+                }, 500);
             }
 
             function showPlot(plotId) {
@@ -306,21 +287,18 @@
 
             function searchTrait(traits) {
                 const searchResults = document.getElementById('searchResults');
-                const loadingSpinner = document.querySelector('.loading-spinner');
-                searchResults.innerHTML = ''; // Clear previous results
-                
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                searchResults.innerHTML = '';
                 if (traits) {
-                    loadingSpinner.classList.add('active');
+                    loadingOverlay.classList.add('active');
 
-                    // Split the input string by commas and trim whitespace
                     const traitArray = traits.split(',').map(trait => trait.trim().toLowerCase());
 
-                    setTimeout(() => { // Simulate network request delay
+                    setTimeout(() => {
                         let foundComponents = [];
                         for (let component in components) {
                             let componentData = components[component];
 
-                            // Check if the component contains all specified traits or genes
                             const hasAllTraits = traitArray.every(trait =>
                                 componentData['Traits'].some(t => t['Trait'].toLowerCase().includes(trait)) ||
                                 componentData['Genes'].some(g => g['symbol'].toLowerCase().includes(trait))
@@ -330,7 +308,6 @@
                                 foundComponents.push(component);
                             }
                         }
-                        
                         if (foundComponents.length > 0) {
                             let resultHTML = '<h2>Search Results:</h2><ul class="list-group">';
                             foundComponents.forEach(function(comp) {
@@ -341,9 +318,9 @@
                         } else {
                             searchResults.innerHTML = '<p class="text-danger">No components found with the specified traits or genes.</p>';
                         }
-                        loadingSpinner.classList.remove('active');
-                        addSearchResultClickHandlers(); // Add click handlers to the search results
-                    }, 1000); // Adjust the timeout as needed
+                        loadingOverlay.classList.remove('active');
+                        addSearchResultClickHandlers();
+                    }, 1000);
                 } else {
                     searchResults.innerHTML = '<p class="text-danger">Please enter traits or genes to search for.</p>';
                 }
@@ -354,10 +331,10 @@
                     item.addEventListener('click', function() {
                         const component = this.getAttribute('data-component');
                         const loadingOverlay = document.getElementById('loadingOverlay');
-                        loadingOverlay.classList.add('active'); // Show overlay immediately
+                        loadingOverlay.classList.add('active');
                         document.getElementById('componentSelect').value = component;
                         updateTable(component);
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top for better visibility
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     });
                 });
             }
@@ -370,7 +347,6 @@
                     if (!val) return false;
                     currentFocus = -1;
 
-                    // Get the last trait or gene being typed for autocomplete suggestions
                     const traitsOrGenes = val.split(',').map(trait => trait.trim());
                     const currentTraitOrGene = traitsOrGenes[traitsOrGenes.length - 1].toLowerCase();
 
@@ -384,11 +360,10 @@
                         suggestionItem.innerHTML = `<strong>${item.substr(0, currentTraitOrGene.length)}</strong>${item.substr(currentTraitOrGene.length)}`;
                         suggestionItem.innerHTML += `<input type='hidden' value='${item}'>`;
                         suggestionItem.addEventListener("click", function() {
-                            // Replace the last trait or gene with the selected suggestion
                             traitsOrGenes[traitsOrGenes.length - 1] = this.getElementsByTagName("input")[0].value;
                             input.value = traitsOrGenes.join(', ') + ', ';
                             closeAllLists();
-                            searchTrait(input.value); // Automatically trigger search
+                            searchTrait(input.value);
                         });
                         suggestionList.appendChild(suggestionItem);
                     });
@@ -400,7 +375,7 @@
                     if (e.keyCode === 40) {
                         currentFocus++;
                         addActive(x);
-                    } else if (e.keyCode === 38) {
+                    } else if (e.keyCode === 38) {} else if (e.keyCode === 38) {
                         currentFocus--;
                         addActive(x);
                     } else if (e.keyCode === 13) {
@@ -469,8 +444,5 @@
             });
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
