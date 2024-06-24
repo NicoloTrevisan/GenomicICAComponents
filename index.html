@@ -116,6 +116,12 @@
                 font-size: 14px;
             }
         }
+        .contact-info {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -195,6 +201,18 @@
                 </table>
             </div>
         </div>
+
+        <!-- Comment section for each component -->
+        <div id="commentSection" class="mt-5">
+            <h2>Comments</h2>
+            <p>If you have feedback on any component, please leave your comment using the form below. You can also provide general feedback:</p>
+            <p><a href="https://forms.gle/g9SMGgBac6xvFDRWA" target="_blank" class="btn btn-primary">Leave a Comment</a></p>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="contact-info">
+            <p>For further inquiries, contact: <a href="mailto:nicolo.trevisan@radboudumc.nl">nicolo.trevisan@radboudumc.nl</a></p>
+        </div>
     </div>
 
     <div class="loading-spinner spinner-border text-primary" role="status">
@@ -226,17 +244,17 @@
             allGenes = Array.from(allGenes);
 
             // Populate component select
-const componentSelect = document.getElementById('componentSelect');
-const componentNumbers = Object.keys(components)
-    .map(key => parseInt(key.replace('IC', '')))
-    .sort((a, b) => a - b);
+            const componentSelect = document.getElementById('componentSelect');
+            const componentNumbers = Object.keys(components)
+                .map(key => parseInt(key.replace('IC', '')))
+                .sort((a, b) => a - b);
 
-componentNumbers.forEach(number => {
-    let option = document.createElement('option');
-    option.value = `IC${number}`;
-    option.textContent = `IC${number}`;
-    componentSelect.appendChild(option);
-});
+            componentNumbers.forEach(number => {
+                let option = document.createElement('option');
+                option.value = `IC${number}`;
+                option.textContent = `IC${number}`;
+                componentSelect.appendChild(option);
+            });
 
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
@@ -377,7 +395,7 @@ componentNumbers.forEach(number => {
                             closeAllLists();
                             searchTrait(input.value);
                         });
-                        suggestionListsuggestionList.appendChild(suggestionItem);
+                        suggestionList.appendChild(suggestionItem);
                     });
                 });
 
