@@ -3,7 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Load the CSV files
 trait_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/Summary_traits.csv')
-gene_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/all_genes_combined.txt', sep='\t')
+gene_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/all_genes_combined_MHC.txt', sep='\t')
 
 # Ensure 'Component' columns are strings and extract only the "IC" part ("IC1", "IC2", etc.)
 trait_data['Component'] = trait_data['Component'].astype(str).str.extract(r'(IC\d+)', expand=False).str.strip()
