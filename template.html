@@ -173,20 +173,31 @@
     color: #007bff;
 }
 
-/* Media query for mobile responsiveness */
+/* Buttons padding and size adjustments for mobile */
+@media (max-width: 768px) {
+    .btn-custom {
+        font-size: 14px;
+        padding: 6px 10px; /* Reduce padding for mobile */
+        margin-bottom: 5px; /* Add margin between buttons */
+    }
+
+    /* Stack buttons vertically if there's not enough space */
+    .d-flex {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Make sure the dropdown is visible on mobile */
 @media (max-width: 768px) {
     .navbar-nav .nav-link {
         font-size: 16px;
-        padding: 10px 15px;
+        padding: 8px 12px;
     }
 
     .navbar-nav .dropdown-menu {
         font-size: 14px;
         padding: 10px;
-    }
-
-    .navbar-nav .dropdown-menu .dropdown-item {
-        padding: 8px 15px;
     }
 }
 
@@ -227,7 +238,7 @@
         
         <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
 
-        <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center">
+        <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center flex-wrap">
             <button id="showManhattan" class="btn btn-custom btn-manhattan me-2">Show Manhattan Plot</button>
             <button id="showIDP" class="btn btn-custom btn-idp">Show IDP Plot</button>
         </div>
@@ -254,11 +265,12 @@
 
         <div id="searchResults" class="mb-3"></div>
 
-        <div class="d-flex justify-content-center mb-3">
-            <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
-            <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
-            <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
-            <button id="showGeneSet" class="btn btn-custom btn-gene-set">Show Gene Set</button>
+        <!-- Wrap button group -->
+        <div class="d-flex justify-content-center mb-3 flex-wrap">
+        <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
+        <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
+        <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
+        <button id="showGeneSet" class="btn btn-custom btn-gene-set">Show Gene Set</button>
         </div>
 
         <div id="traitsSection">
