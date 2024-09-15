@@ -11,6 +11,7 @@
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
             color: #333;
+            padding-top: 70px; /* Adjust based on navbar height */
         }
         .container {
             max-width: 1200px;
@@ -47,6 +48,13 @@
             background-color: #ffc107;
             color: #333;
         }
+
+        .btn-magma {
+        background-color: #dc3545; /* Bootstrap's red color */
+        color: white;
+        }
+
+
         .btn-custom:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -122,10 +130,96 @@
             font-size: 14px;
             color: #555;
         }
+
+        /* Style the Information dropdown button to be more prominent */
+.navbar-nav .nav-link {
+    font-size: 18px;
+    padding: 12px 20px;
+    background-color: #007bff; /* Make the background blue */
+    color: white;
+    border-radius: 30px;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover, 
+.navbar-nav .nav-link:focus {
+    background-color: #00c5ff; /* Darker blue on hover */
+    color: white;
+}
+
+/* Style the dropdown menu */
+.navbar-nav .dropdown-menu {
+    font-size: 16px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* Style each dropdown item */
+.navbar-nav .dropdown-menu .dropdown-item {
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: all 0.3s ease-in-out;
+}
+
+.navbar-nav .dropdown-menu .dropdown-item:hover, 
+.navbar-nav .dropdown-menu .dropdown-item:focus {
+    background-color: #e9ecef; /* Lighter gray on hover */
+    color: #007bff;
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    .navbar-nav .nav-link {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+
+    .navbar-nav .dropdown-menu {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .navbar-nav .dropdown-menu .dropdown-item {
+        padding: 8px 15px;
+    }
+}
+
+
     </style>
 </head>
 <body>
     <div class="container">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Information
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="https://onlinelibrary.wiley.com/doi/full/10.1111/gbb.12876" target="_blank">Reference Paper</a></li>
+                                <li><a class="dropdown-item" href="mailto:nicolo.trevisan@radboudumc.nl">Contact Us</a></li>
+                                <li><a class="dropdown-item" href="https://forms.gle/g9SMGgBac6xvFDRWA" target="_blank">Leave a Comment</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="dropdown-item">People Involved:</li>
+                                <li class="dropdown-item">Lennart M. Oblong</li>
+                                <li class="dropdown-item">Sourena Soheili-Nezhad</li>
+                                <li class="dropdown-item">Nicolò Trevisan</li>
+                                <li class="dropdown-item">Yingjie Shi</li>
+                                <li class="dropdown-item">Margo Raijmakers</li>
+                                <li class="dropdown-item">Christian F. Beckmann</li>
+                                <li class="dropdown-item">Emma Sprooten</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        
         <h1>IC Components Traits<span id="selectedComponentTitle"></span></h1>
 
         <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center">
@@ -157,7 +251,8 @@
 
         <div class="d-flex justify-content-center mb-3">
             <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
-            <button id="showGenes" class="btn btn-custom btn-genes">Show Genes</button>
+            <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
+            <button id="showMagma" class="btn btn-custom btn-magma">Show Genes from MAGMA</button>
         </div>
 
         <div id="traitsSection">
@@ -196,6 +291,29 @@
                         </tr>
                     </thead>
                     <tbody id="genesTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="magmaGenesSection" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>GENE</th>
+                            <th>Chromosome</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>NSNPS</th>
+                            <th>NPARAM</th>
+                            <th>N</th>
+                            <th>ZSTAT</th>
+                            <th>P</th>
+                        </tr>
+                    </thead>
+                    <tbody id="magmaGenesTableBody">
                         <!-- Content will be populated by JavaScript -->
                     </tbody>
                 </table>
@@ -299,6 +417,23 @@
                         </tr>`;
                         genesTableBody.innerHTML += row;
                     });
+
+                    if (componentData['MagmaGenes']) {
+                    componentData['MagmaGenes'].forEach(function(gene) {
+                    let row = `<tr>
+            <td>${gene['GENE']}</td>
+            <td>${gene['CHR']}</td>
+            <td>${gene['START']}</td>
+            <td>${gene['STOP']}</td>
+            <td>${gene['NSNPS']}</td>
+            <td>${gene['NPARAM']}</td>
+            <td>${gene['N']}</td>
+            <td>${gene['ZSTAT']}</td>
+            <td>${gene['P']}</td>
+        </tr>`;
+        document.getElementById('magmaGenesTableBody').innerHTML += row;
+    });
+}
                 }
 
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
@@ -452,6 +587,12 @@
             document.getElementById('showGenes').addEventListener('click', function() {
                 document.getElementById('traitsSection').style.display = 'none';
                 document.getElementById('genesSection').style.display = 'block';
+            });
+
+            document.getElementById('showMagma').addEventListener('click', function() {
+            document.getElementById('traitsSection').style.display = 'none';
+            document.getElementById('genesSection').style.display = 'none';
+            document.getElementById('magmaGenesSection').style.display = 'block';
             });
 
             autocomplete(document.getElementById("searchInput"), allTraits.concat(allGenes));
