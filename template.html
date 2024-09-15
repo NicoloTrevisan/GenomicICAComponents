@@ -49,6 +49,11 @@
             color: #333;
         }
 
+        .btn-gene-set {
+        background-color: #6f42c1; /* Choose a distinct color */
+        color: white;
+        }
+
         .btn-magma {
         background-color: #dc3545; /* Bootstrap's red color */
         color: white;
@@ -252,7 +257,8 @@
         <div class="d-flex justify-content-center mb-3">
             <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
             <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
-            <button id="showMagma" class="btn btn-custom btn-magma">Show Genes from MAGMA</button>
+            <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
+            <button id="showGeneSet" class="btn btn-custom btn-gene-set">Show Gene Set</button>
         </div>
 
         <div id="traitsSection">
@@ -320,6 +326,26 @@
             </div>
         </div>
 
+        <div id="geneSetSection" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>FULL_NAME</th>
+                            <th>NGENES</th>
+                            <th>BETA</th>
+                            <th>BETA_STD</th>
+                            <th>SE</th>
+                            <th>P_FDR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="geneSetTableBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Comment section for each component -->
         <div id="commentSection" class="mt-5">
             <h2>Comments</h2>
@@ -357,6 +383,12 @@
                 components[component]['Genes'].forEach(function(gene) {
                     allGenes.add(gene['symbol']);
                 });
+                // Include Gene Set FULL_NAMEs in search suggestions
+                for (let component in components) {
+                components[component]['NewData'].forEach(function(data) {
+                allTraits.add(data['FULL_NAME']);
+                });
+}
             }
             allTraits = Array.from(allTraits);
             allGenes = Array.from(allGenes);
@@ -434,6 +466,21 @@
         document.getElementById('magmaGenesTableBody').innerHTML += row;
     });
 }
+
+if (componentData['NewData']) {
+    componentData['NewData'].forEach(function(data) {
+        let row = `<tr>
+            <td>${data['FULL_NAME']}</td>
+            <td>${data['NGENES']}</td>
+            <td>${data['BETA']}</td>
+            <td>${data['BETA_STD']}</td>
+            <td>${data['SE']}</td>
+            <td>${data['P_FDR']}</td>
+        </tr>`;
+        geneSetTableBody.innerHTML += row;
+    });
+}
+
                 }
 
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
@@ -582,20 +629,32 @@
             document.getElementById('showTraits').addEventListener('click', function() {
     document.getElementById('traitsSection').style.display = 'block';
     document.getElementById('genesSection').style.display = 'none';
-    document.getElementById('magmaGenesSection').style.display = 'none'; // Hide Magma Genes
+    document.getElementById('magmaGenesSection').style.display = 'none';
+    document.getElementById('geneSetSection').style.display = 'none';
 });
 
 document.getElementById('showGenes').addEventListener('click', function() {
     document.getElementById('traitsSection').style.display = 'none';
     document.getElementById('genesSection').style.display = 'block';
-    document.getElementById('magmaGenesSection').style.display = 'none'; // Hide Magma Genes
+    document.getElementById('magmaGenesSection').style.display = 'none';
+    document.getElementById('geneSetSection').style.display = 'none';
 });
 
 document.getElementById('showMagma').addEventListener('click', function() {
     document.getElementById('traitsSection').style.display = 'none';
     document.getElementById('genesSection').style.display = 'none';
-    document.getElementById('magmaGenesSection').style.display = 'block'; // Show Magma Genes
+    document.getElementById('magmaGenesSection').style.display = 'block';
+    document.getElementById('geneSetSection').style.display = 'none';
 });
+
+document.getElementById('showGeneSet').addEventListener('click', function() {
+    document.getElementById('traitsSection').style.display = 'none';
+    document.getElementById('genesSection').style.display = 'none';
+    document.getElementById('magmaGenesSection').style.display = 'none';
+    document.getElementById('geneSetSection').style.display = 'block';  
+});
+
+
 
             autocomplete(document.getElementById("searchInput"), allTraits.concat(allGenes));
 
