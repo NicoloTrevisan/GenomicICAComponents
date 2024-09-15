@@ -580,20 +580,22 @@
             }
 
             document.getElementById('showTraits').addEventListener('click', function() {
-                document.getElementById('traitsSection').style.display = 'block';
-                document.getElementById('genesSection').style.display = 'none';
-            });
+    document.getElementById('traitsSection').style.display = 'block';
+    document.getElementById('genesSection').style.display = 'none';
+    document.getElementById('magmaGenesSection').style.display = 'none'; // Hide Magma Genes
+});
 
-            document.getElementById('showGenes').addEventListener('click', function() {
-                document.getElementById('traitsSection').style.display = 'none';
-                document.getElementById('genesSection').style.display = 'block';
-            });
+document.getElementById('showGenes').addEventListener('click', function() {
+    document.getElementById('traitsSection').style.display = 'none';
+    document.getElementById('genesSection').style.display = 'block';
+    document.getElementById('magmaGenesSection').style.display = 'none'; // Hide Magma Genes
+});
 
-            document.getElementById('showMagma').addEventListener('click', function() {
-            document.getElementById('traitsSection').style.display = 'none';
-            document.getElementById('genesSection').style.display = 'none';
-            document.getElementById('magmaGenesSection').style.display = 'block';
-            });
+document.getElementById('showMagma').addEventListener('click', function() {
+    document.getElementById('traitsSection').style.display = 'none';
+    document.getElementById('genesSection').style.display = 'none';
+    document.getElementById('magmaGenesSection').style.display = 'block'; // Show Magma Genes
+});
 
             autocomplete(document.getElementById("searchInput"), allTraits.concat(allGenes));
 
