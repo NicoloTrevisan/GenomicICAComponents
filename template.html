@@ -327,6 +327,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>GENE</th>
+                            <th>GENE SYMBOL</th>
                             <th>Chromosome</th>
                             <th>Start</th>
                             <th>End</th>
@@ -434,6 +435,8 @@
                 const componentData = components[selectedComponent];
                 detailsTableBody.innerHTML = '';
                 genesTableBody.innerHTML = '';
+                magmaGenesTableBody.innerHTML = ''; 
+                geneSetTableBody.innerHTML = ''; 
                 componentTitleSpan.textContent = ` - ${selectedComponent}`;
 
                 if (componentData) {
@@ -472,6 +475,7 @@
                     componentData['MagmaGenes'].forEach(function(gene) {
                     let row = `<tr>
             <td>${gene['GENE']}</td>
+            <td>${gene['GENE SYMBOL']}</td>
             <td>${gene['CHR']}</td>
             <td>${gene['START']}</td>
             <td>${gene['STOP']}</td>

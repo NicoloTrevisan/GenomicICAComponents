@@ -4,7 +4,8 @@ from jinja2 import Environment, FileSystemLoader
 # Load the CSV files
 trait_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/Summary_traits.csv')
 gene_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/all_genes_combined_MHC.txt', sep='\t')
-magma_gene_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/genes_MAGMA_all_components.csv')
+magma_gene_data = pd.read_csv(
+    '/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/genes_MAGMA_with_symbols.csv', sep=';', decimal=',')
 new_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/combined_filtered_padj_below_0_1.txt', sep='\t')
 
 # Clean up any leading/trailing spaces in the 'Component' column
@@ -34,7 +35,7 @@ for col in numeric_cols:
 # Group the data separately for traits, genes, MAGMA genes, and the new data
 grouped_trait_data = trait_data.groupby('Component')[['Chromosome', 'Position', 'Trait']].apply(lambda x: x.to_dict('records')).to_dict()
 grouped_gene_data = gene_data.groupby('Component')[['ensg', 'symbol', 'chr', 'start', 'end', 'strand', 'type', 'entrezID', 'HUGO', 'pLI', 'ncRVIS']].apply(lambda x: x.to_dict('records')).to_dict()
-grouped_magma_gene_data = magma_gene_data.groupby('Component')[['GENE', 'CHR', 'START', 'STOP', 'NSNPS', 'NPARAM', 'N', 'ZSTAT', 'P']].apply(lambda x: x.to_dict('records')).to_dict()
+grouped_magma_gene_data = magma_gene_data.groupby('Component')[['GENE', 'GENE SYMBOL', 'CHR', 'START', 'STOP', 'NSNPS', 'NPARAM', 'N', 'ZSTAT', 'P']].apply(lambda x: x.to_dict('records')).to_dict()
 grouped_new_data = new_data.groupby('Component')[['FULL_NAME', 'NGENES', 'BETA', 'BETA_STD', 'SE', 'P_FDR']].apply(lambda x: x.to_dict('records')).to_dict()
 
 # Combine all data into a single dictionary
