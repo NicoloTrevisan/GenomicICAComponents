@@ -22,6 +22,5 @@ Independent Component Analysis (ICA) is an advanced unsupervised decomposition m
 
 3.2 Dimensionality and Component Selection
 
-	•	The decomposition was performed on raw and z-transformed SNP effect sizes, generating up to 200 components.
-	•	Dimension 50 was chosen as the maximum for further analysis, balancing explained variance and model complexity.
-	•	Dimension 10 was identified as optimal, providing the best trade-off between reproducibility, interpretability, and model complexity.
+	•	The decomposition was performed on raw and z-transformed SNP effect sizes.
+	•	Dimension 16 was identified as optimal, providing the best trade-off between reproducibility, interpretability, and model complexity.
