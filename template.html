@@ -212,6 +212,36 @@
     }
 }
 
+/* Styles for Component Title and Description */
+#componentInfo {
+    margin-bottom: 30px;
+}
+
+#componentTitle {
+    font-size: 2rem; /* Adjust size as needed */
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #333;
+}
+
+#componentDescription {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #555;
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+    #componentTitle {
+        font-size: 1.5rem;
+    }
+
+    #componentDescription {
+        font-size: 0.9rem;
+    }
+}
 
     </style>
 </head>
@@ -256,6 +286,11 @@
 
         
         <h1>genomICA<span id="selectedComponentTitle"></span></h1>
+        <!-- Component Title and Description -->
+        <div id="componentInfo">
+        <h2 id="componentTitle"></h2>
+        <p id="componentDescription"></p>
+        </div>
 
         <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center flex-wrap">
             <button id="showManhattan" class="btn btn-custom btn-manhattan me-2">Show Manhattan Plot</button>
@@ -452,8 +487,12 @@
                 magmaGenesTableBody.innerHTML = ''; 
                 geneSetTableBody.innerHTML = ''; 
                 componentTitleSpan.textContent = ` - ${selectedComponent}`;
+                
 
                 if (componentData) {
+                    // Update component title and description
+                    document.getElementById('componentTitle').textContent = componentData['Title'] || selectedComponent;
+                    document.getElementById('componentDescription').textContent = componentData['Description'] || 'Description not available.';
                     componentData['Traits'].sort((a, b) => {
                         const chrA = parseInt(a['Chromosome']);
                         const chrB = parseInt(b['Chromosome']);

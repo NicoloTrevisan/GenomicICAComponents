@@ -8,6 +8,13 @@ magma_gene_data = pd.read_csv(
     '/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/genes_MAGMA_with_symbols.csv', sep=';', decimal=',')
 new_data = pd.read_csv('/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/combined_filtered_padj_below_0_1.txt', sep='\t')
 
+# Load component descriptions from the tab-separated text file
+descriptions_file_path = '/Users/nico/Desktop/Google_Drive/MAGMA/PCA_ICA_April2024/IC_loci_GWAS_Catalog/COMPONENTS_DESCRIPTIONS.txt'
+descriptions_df = pd.read_csv(descriptions_file_path, sep='\t', encoding='latin-1')
+
+# Create a dictionary for descriptions
+component_descriptions = descriptions_df.set_index('Components')[['Title', 'Text']].to_dict('index')
+
 # Clean up any leading/trailing spaces in the 'Component' column
 magma_gene_data['Component'] = magma_gene_data['Component'].astype(str).str.strip()
 new_data['Component'] = new_data['Component'].astype(str).str.strip()
@@ -40,14 +47,23 @@ grouped_new_data = new_data.groupby('Component')[['FULL_NAME', 'NGENES', 'BETA',
 
 # Combine all data into a single dictionary
 components = {}
-all_components = set().union(grouped_trait_data.keys(), grouped_gene_data.keys(), grouped_magma_gene_data.keys(), grouped_new_data.keys())
+all_components = set().union(
+    grouped_trait_data.keys(), grouped_gene_data.keys(), 
+    grouped_magma_gene_data.keys(), grouped_new_data.keys(), 
+    component_descriptions.keys()
+)
+
 for component in all_components:
+    descriptions = component_descriptions.get(component, {})
     components[component] = {
         'Traits': grouped_trait_data.get(component, []),
         'Genes': grouped_gene_data.get(component, []),
         'MagmaGenes': grouped_magma_gene_data.get(component, []),
-        'NewData': grouped_new_data.get(component, [])
+        'NewData': grouped_new_data.get(component, []),
+        'Description': descriptions.get('Text', "Description not available."),
+        'Title': descriptions.get('Title', component)  # Fallback to component name if Title is missing
     }
+
 
 # Sort components to ensure they are in numerical order
 sorted_components = dict(sorted(components.items(), key=lambda item: int(item[0][2:])))
