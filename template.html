@@ -27,6 +27,7 @@
         .container {
             max-width: 1200px;
             padding: 20px;
+            position: relative;
         }
         h1 {
             color: #007bff;
@@ -46,6 +47,7 @@
             font-size: 16px;
             border-radius: 25px;
             transition: all 0.3s ease;
+            margin: 5px;
         }
         .btn-manhattan, .btn-idp {
             background-color: #28a745;
@@ -61,15 +63,19 @@
         }
 
         .btn-gene-set {
-        background-color: #6f42c1; /* Choose a distinct color */
-        color: white;
+            background-color: #6f42c1; /* Choose a distinct color */
+            color: white;
         }
 
         .btn-magma {
-        background-color: #dc3545; /* Bootstrap's red color */
-        color: white;
+            background-color: #dc3545; /* Bootstrap's red color */
+            color: white;
         }
 
+        .btn-info {
+            background-color: #17a2b8; /* Bootstrap's info color */
+            color: white;
+        }
 
         .btn-custom:hover {
             transform: translateY(-2px);
@@ -102,6 +108,9 @@
             overflow-y: auto;
             background-color: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
         }
         .autocomplete-suggestion {
             padding: 10px;
@@ -148,100 +157,85 @@
         }
 
         /* Style the Information dropdown button to be more prominent */
-.navbar-nav .nav-link {
-    font-size: 18px;
-    padding: 12px 20px;
-    background-color: #007bff; /* Make the background blue */
-    color: white;
-    border-radius: 30px;
-    transition: all 0.3s ease-in-out;
-}
+        .navbar-nav .nav-link {
+            font-size: 18px;
+            padding: 12px 20px;
+            background-color: #007bff; /* Make the background blue */
+            color: white;
+            border-radius: 30px;
+            transition: all 0.3s ease-in-out;
+        }
 
-.navbar-nav .nav-link:hover, 
-.navbar-nav .nav-link:focus {
-    background-color: #00c5ff; /* Darker blue on hover */
-    color: white;
-}
+        .navbar-nav .nav-link:hover, 
+        .navbar-nav .nav-link:focus {
+            background-color: #00c5ff; /* Darker blue on hover */
+            color: white;
+        }
 
-/* Style the dropdown menu */
-.navbar-nav .dropdown-menu {
-    font-size: 16px;
-    padding: 15px;
-    border-radius: 10px;
-}
+        /* Style the dropdown menu */
+        .navbar-nav .dropdown-menu {
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 10px;
+        }
 
-/* Style each dropdown item */
-.navbar-nav .dropdown-menu .dropdown-item {
-    padding: 10px 20px;
-    background-color: #f8f9fa;
-    color: #333;
-    transition: all 0.3s ease-in-out;
-}
+        /* Style each dropdown item */
+        .navbar-nav .dropdown-menu .dropdown-item {
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            transition: all 0.3s ease-in-out;
+        }
 
-.navbar-nav .dropdown-menu .dropdown-item:hover, 
-.navbar-nav .dropdown-menu .dropdown-item:focus {
-    background-color: #e9ecef; /* Lighter gray on hover */
-    color: #007bff;
-}
+        .navbar-nav .dropdown-menu .dropdown-item:hover, 
+        .navbar-nav .dropdown-menu .dropdown-item:focus {
+            background-color: #e9ecef; /* Lighter gray on hover */
+            color: #007bff;
+        }
 
-/* Buttons padding and size adjustments for mobile */
-@media (max-width: 768px) {
-    .btn-custom {
-        font-size: 14px;
-        padding: 6px 10px; /* Reduce padding for mobile */
-        margin-bottom: 5px; /* Add margin between buttons */
-    }
+        /* Make sure the dropdown is visible on mobile */
+        @media (max-width: 768px) {
+            .navbar-nav .nav-link {
+                font-size: 16px;
+                padding: 8px 12px;
+            }
 
-    /* Stack buttons vertically if there's not enough space */
-    .d-flex {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-}
+            .navbar-nav .dropdown-menu {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
 
-/* Make sure the dropdown is visible on mobile */
-@media (max-width: 768px) {
-    .navbar-nav .nav-link {
-        font-size: 16px;
-        padding: 8px 12px;
-    }
+        /* Styles for Component Title and Description */
+        #componentInfoSection {
+            margin-bottom: 30px;
+            text-align: center;
+        }
 
-    .navbar-nav .dropdown-menu {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
+        #componentInfoSection table th, #componentInfoSection table td {
+            font-size: 1rem;
+            color: #333;
+            padding: 8px;
+            vertical-align: top;
+        }
 
-/* Styles for Component Title and Description */
-#componentInfo {
-    margin-bottom: 30px;
-}
+        #componentInfoSection table th {
+            width: 20%;
+            text-align: right;
+            color: #555;
+        }
 
-#componentTitle {
-    font-size: 2rem; /* Adjust size as needed */
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #333;
-}
+        #componentInfoSection table td {
+            width: 80%;
+            text-align: left;
+        }
 
-#componentDescription {
-    font-size: 1rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #555;
-}
-
-/* Responsive adjustments for mobile devices */
-@media (max-width: 768px) {
-    #componentTitle {
-        font-size: 1.5rem;
-    }
-
-    #componentDescription {
-        font-size: 0.9rem;
-    }
-}
+        /* Responsive adjustments for mobile devices */
+        @media (max-width: 768px) {
+            #componentInfoSection table th, #componentInfoSection table td {
+                font-size: 0.9rem;
+            }
+        }
 
     </style>
 </head>
@@ -268,6 +262,7 @@
                                 <li><a class="dropdown-item" href="mailto:nicolo.trevisan@radboudumc.nl">Contact Us</a></li>
                                 <li><a class="dropdown-item" href="https://github.com/NicoloTrevisan/GenomicICAComponents/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a></li> <!-- New README Link -->
                                 <li><a class="dropdown-item" href="https://forms.gle/g9SMGgBac6xvFDRWA" target="_blank">Leave a Comment</a></li>
+                                <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=5oBdGZorJzw" target="_blank">OHBM Talk</a></li> 
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="dropdown-item">People Involved:</li>
                                 <li class="dropdown-item">Lennart M. Oblong</li>
@@ -286,12 +281,8 @@
 
         
         <h1>genomICA<span id="selectedComponentTitle"></span></h1>
-        <!-- Component Title and Description -->
-        <div id="componentInfo">
-        <h2 id="componentTitle"></h2>
-        <p id="componentDescription"></p>
-        </div>
 
+        <!-- Top Plot Controls -->
         <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center flex-wrap">
             <button id="showManhattan" class="btn btn-custom btn-manhattan me-2">Show Manhattan Plot</button>
             <button id="showIDP" class="btn btn-custom btn-idp">Show IDP Plot</button>
@@ -300,6 +291,7 @@
         <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
         <img id="idpPlot" class="plot" src="" alt="IDP Plot">
 
+        <!-- Select Component and Search Sections -->
         <div class="mb-3">
             <label for="componentSelect" class="form-label">Select Component:</label>
             <select id="componentSelect" class="form-select">
@@ -319,15 +311,32 @@
 
         <div id="searchResults" class="mb-3"></div>
 
-        <!-- Wrap button group -->
+        <!-- Bottom Controls -->
         <div class="d-flex justify-content-center mb-3 flex-wrap">
-        <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
-        <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
-        <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
-        <button id="showGeneSet" class="btn btn-custom btn-gene-set">Show Gene Set</button>
+            <button id="showTraits" class="btn btn-custom btn-traits me-2">Show Traits</button>
+            <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
+            <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
+            <button id="showGeneSet" class="btn btn-custom btn-gene-set me-2">Show Gene Set</button>
+            <button id="toggleComponentInfo" class="btn btn-custom btn-info">Tentative Interpretation</button>
         </div>
 
-        <div id="traitsSection">
+        <!-- Component Information Section -->
+        <div id="componentInfoSection" class="mb-3" style="display: none;">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Provisional Title</th>
+                        <td id="componentTitle"></td>
+                    </tr>
+                    <tr>
+                        <th>Exploratory narrative interpretations (in development)</th>
+                        <td id="componentDescription"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="traitsSection" style="display: none;">
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-light">
@@ -452,11 +461,11 @@
                     allGenes.add(gene['symbol']);
                 });
                 // Include Gene Set FULL_NAMEs in search suggestions
-                for (let component in components) {
-                components[component]['NewData'].forEach(function(data) {
-                allTraits.add(data['FULL_NAME']);
-                });
-}
+                if (components[component]['NewData']) {
+                    components[component]['NewData'].forEach(function(data) {
+                        allTraits.add(data['FULL_NAME']);
+                    });
+                }
             }
             allTraits = Array.from(allTraits);
             allGenes = Array.from(allGenes);
@@ -477,7 +486,11 @@
             function updateTable(selectedComponent) {
                 const detailsTableBody = document.getElementById('detailsTableBody');
                 const genesTableBody = document.getElementById('genesTableBody');
-                const componentTitleSpan = document.getElementById('selectedComponentTitle');
+                const magmaGenesTableBody = document.getElementById('magmaGenesTableBody');
+                const geneSetTableBody = document.getElementById('geneSetTableBody');
+                const componentTitleDiv = document.getElementById('componentTitle');
+                const componentDescriptionDiv = document.getElementById('componentDescription');
+                const componentInfoSection = document.getElementById('componentInfoSection');
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 loadingOverlay.classList.add('active');
 
@@ -486,22 +499,27 @@
                 genesTableBody.innerHTML = '';
                 magmaGenesTableBody.innerHTML = ''; 
                 geneSetTableBody.innerHTML = ''; 
-                componentTitleSpan.textContent = ` - ${selectedComponent}`;
-                
+
+                // Hide all sections except componentInfoSection if it's selected
+                if (selectedComponent) {
+                    componentInfoSection.style.display = 'none';
+                }
 
                 if (componentData) {
                     // Update component title and description
-                    document.getElementById('componentTitle').textContent = componentData['Title'] || selectedComponent;
-                    document.getElementById('componentDescription').textContent = componentData['Description'] || 'Description not available.';
+                    componentTitleDiv.textContent = componentData['Title'] || selectedComponent;
+                    componentDescriptionDiv.textContent = componentData['Description'] || 'Description not available.';
+
                     componentData['Traits'].sort((a, b) => {
                         const chrA = parseInt(a['Chromosome']);
                         const chrB = parseInt(b['Chromosome']);
                         if (chrA !== chrB) return chrA - chrB;
                         return parseInt(a['Position']) - parseInt(b['Position']);
                     }).forEach(function(trait) {
+                        let positions = trait['Position'].split(';').map(pos => `<div>${pos}</div>`).join('');
                         let row = `<tr>
                             <td>${trait['Chromosome']}</td>
-                            <td class="position-cell">${trait['Position'].split(';').map(pos => `<div>${pos}</div>`).join('')}</td>
+                            <td class="position-cell">${positions}</td>
                             <td>${trait['Trait']}</td>
                         </tr>`;
                         detailsTableBody.innerHTML += row;
@@ -525,37 +543,36 @@
                     });
 
                     if (componentData['MagmaGenes']) {
-                    componentData['MagmaGenes'].forEach(function(gene) {
-                    let row = `<tr>
-            <td>${gene['GENE']}</td>
-            <td>${gene['GENE SYMBOL']}</td>
-            <td>${gene['CHR']}</td>
-            <td>${gene['START']}</td>
-            <td>${gene['STOP']}</td>
-            <td>${gene['NSNPS']}</td>
-            <td>${gene['NPARAM']}</td>
-            <td>${gene['N']}</td>
-            <td>${gene['ZSTAT']}</td>
-            <td>${gene['P']}</td>
-        </tr>`;
-        document.getElementById('magmaGenesTableBody').innerHTML += row;
-    });
-}
+                        componentData['MagmaGenes'].forEach(function(gene) {
+                            let row = `<tr>
+                                <td>${gene['GENE']}</td>
+                                <td>${gene['GENE SYMBOL']}</td>
+                                <td>${gene['CHR']}</td>
+                                <td>${gene['START']}</td>
+                                <td>${gene['STOP']}</td>
+                                <td>${gene['NSNPS']}</td>
+                                <td>${gene['NPARAM']}</td>
+                                <td>${gene['N']}</td>
+                                <td>${gene['ZSTAT']}</td>
+                                <td>${gene['P']}</td>
+                            </tr>`;
+                            magmaGenesTableBody.innerHTML += row;
+                        });
+                    }
 
-if (componentData['NewData']) {
-    componentData['NewData'].forEach(function(data) {
-        let row = `<tr>
-            <td>${data['FULL_NAME']}</td>
-            <td>${data['NGENES']}</td>
-            <td>${data['BETA']}</td>
-            <td>${data['BETA_STD']}</td>
-            <td>${data['SE']}</td>
-            <td>${data['P_FDR']}</td>
-        </tr>`;
-        geneSetTableBody.innerHTML += row;
-    });
-}
-
+                    if (componentData['NewData']) {
+                        componentData['NewData'].forEach(function(data) {
+                            let row = `<tr>
+                                <td>${data['FULL_NAME']}</td>
+                                <td>${data['NGENES']}</td>
+                                <td>${data['BETA']}</td>
+                                <td>${data['BETA_STD']}</td>
+                                <td>${data['SE']}</td>
+                                <td>${data['P_FDR']}</td>
+                            </tr>`;
+                            geneSetTableBody.innerHTML += row;
+                        });
+                    }
                 }
 
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
@@ -570,6 +587,8 @@ if (componentData['NewData']) {
             function showPlot(plotId) {
                 document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
                 document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+                // Hide component info when showing plots
+                document.getElementById('componentInfoSection').style.display = 'none';
             }
 
             function searchTrait(traits) {
@@ -701,50 +720,69 @@ if (componentData['NewData']) {
                 });
             }
 
+            // Event listeners for Show buttons (Bottom Controls)
             document.getElementById('showTraits').addEventListener('click', function() {
-    document.getElementById('traitsSection').style.display = 'block';
-    document.getElementById('genesSection').style.display = 'none';
-    document.getElementById('magmaGenesSection').style.display = 'none';
-    document.getElementById('geneSetSection').style.display = 'none';
-});
-
-document.getElementById('showGenes').addEventListener('click', function() {
-    document.getElementById('traitsSection').style.display = 'none';
-    document.getElementById('genesSection').style.display = 'block';
-    document.getElementById('magmaGenesSection').style.display = 'none';
-    document.getElementById('geneSetSection').style.display = 'none';
-});
-
-document.getElementById('showMagma').addEventListener('click', function() {
-    document.getElementById('traitsSection').style.display = 'none';
-    document.getElementById('genesSection').style.display = 'none';
-    document.getElementById('magmaGenesSection').style.display = 'block';
-    document.getElementById('geneSetSection').style.display = 'none';
-});
-
-document.getElementById('showGeneSet').addEventListener('click', function() {
-    document.getElementById('traitsSection').style.display = 'none';
-    document.getElementById('genesSection').style.display = 'none';
-    document.getElementById('magmaGenesSection').style.display = 'none';
-    document.getElementById('geneSetSection').style.display = 'block';  
-});
-
-
-
-            autocomplete(document.getElementById("searchInput"), allTraits.concat(allGenes));
-
-            document.getElementById('componentSelect').addEventListener('change', function() {
-                updateTable(this.value);
+                hideAllSections();
+                document.getElementById('traitsSection').style.display = 'block';
             });
 
+            document.getElementById('showGenes').addEventListener('click', function() {
+                hideAllSections();
+                document.getElementById('genesSection').style.display = 'block';
+            });
+
+            document.getElementById('showMagma').addEventListener('click', function() {
+                hideAllSections();
+                document.getElementById('magmaGenesSection').style.display = 'block';
+            });
+
+            document.getElementById('showGeneSet').addEventListener('click', function() {
+                hideAllSections();
+                document.getElementById('geneSetSection').style.display = 'block';  
+            });
+
+            // Event listeners for Plot buttons (Top Plot Controls)
             document.getElementById('showManhattan').addEventListener('click', function() {
+                hideAllSections();
                 showPlot('manhattanPlot');
             });
 
             document.getElementById('showIDP').addEventListener('click', function() {
+                hideAllSections();
                 showPlot('idpPlot');
             });
 
+            // Event listener for Tentative Interpretation button (Bottom Controls)
+            document.getElementById('toggleComponentInfo').addEventListener('click', function() {
+                hideAllSections();
+                const componentInfo = document.getElementById('componentInfoSection');
+                componentInfo.style.display = 'block';
+            });
+
+            function hideAllSections() {
+                // Hide all sections
+                document.getElementById('traitsSection').style.display = 'none';
+                document.getElementById('genesSection').style.display = 'none';
+                document.getElementById('magmaGenesSection').style.display = 'none';
+                document.getElementById('geneSetSection').style.display = 'none';
+                document.getElementById('componentInfoSection').style.display = 'none';
+            }
+
+            function showPlot(plotId) {
+                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
+                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+            }
+
+            // Initialize autocomplete
+            autocomplete(document.getElementById("searchInput"), allTraits.concat(allGenes));
+
+            // Event listener for component select
+            document.getElementById('componentSelect').addEventListener('change', function() {
+                hideAllSections();
+                updateTable(this.value);
+            });
+
+            // Event listener for search button
             document.getElementById('searchButton').addEventListener('click', function() {
                 const searchInput = document.getElementById('searchInput').value;
                 searchTrait(searchInput);
