@@ -826,14 +826,15 @@ document.querySelectorAll('.modality-option').forEach(function(option) {
         }
 
         // Update the main heatmapPlot src based on selected modality
-        document.getElementById('heatmapPlot').src = `IDP_html/Brain_Maps/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;        
+        document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
+        
         // Display the main heatmap plot
         showPlot('heatmapPlot');
 
         // Handle additional Volume heatmap
         if (selectedModality.toLowerCase() === 'volume') {
             const volumePlot = document.getElementById('volumeHeatmapPlot');
-            volumePlot.src = `../../IDP/Brain_Maps/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
+            volumePlot.src = `IDP_html/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
             volumePlot.style.display = 'block';
         } else {
             // Hide the Volume heatmap if another modality is selected
