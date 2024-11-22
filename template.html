@@ -27,7 +27,9 @@
         .container {
             max-width: 1200px;
             padding: 20px;
+            margin: 0 auto; /* Center the container */
             position: relative;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
         h1 {
             color: #007bff;
@@ -36,11 +38,17 @@
         }
         .plot {
             width: 100%;
+            max-height: 800px; /* Adjust as needed */
             height: auto;
             margin-bottom: 20px;
             display: none;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            object-fit: contain; /* Ensures images fit within their container without distortion */
+        }
+        iframe.plot {
+            height: 900px; /* Increased from 800px */
+            width: 100%;
         }
         .btn-custom {
             padding: 10px 20px;
@@ -53,6 +61,22 @@
             background-color: #28a745;
             color: white;
         }
+        .btn-heatmap {
+            background-color: #007bff; /* Bootstrap's primary blue color */
+            color: white;
+        }
+
+        .btn-heatmap:hover, 
+        .btn-heatmap:focus {
+            background-color: #0056b3; /* Darker blue on hover */
+            color: white;
+        }
+
+        .dropdown-menu .dropdown-item {
+            cursor: pointer;
+        }
+
+
         .btn-traits {
             background-color: #17a2b8;
             color: white;
@@ -281,17 +305,32 @@
             </div>
         </nav>
 
-        
+
         <h1>genomICA<span id="selectedComponentTitle"></span></h1>
 
         <!-- Top Plot Controls -->
         <div id="plotControls" class="sticky-top mb-3 d-flex justify-content-center flex-wrap">
             <button id="showManhattan" class="btn btn-custom btn-manhattan me-2">Show Manhattan Plot</button>
-            <button id="showIDP" class="btn btn-custom btn-idp">Show IDP Plot</button>
+            <button id="showIDP" class="btn btn-custom btn-idp me-2">Show IDP Plot</button>
         </div>
 
+        <!-- Dropdown for Modality Selection -->
+        <div id="modalityDropdown" class="dropdown me-2" style="display: none; margin-top: 10px;">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="modalityMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Modality
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="modalityMenuButton">
+                <li><a class="dropdown-item modality-option" href="#" data-modality="CT">Cortical Thickness</a></li>
+                <li><a class="dropdown-item modality-option" href="#" data-modality="Volume">Brain Volume</a></li>
+                <li><a class="dropdown-item modality-option" href="#" data-modality="area">Cortical Surface Area</a></li>
+            </ul>
+        </div>
+
+        <!-- Embedded Interactive Plots -->
         <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
         <img id="idpPlot" class="plot" src="" alt="IDP Plot">
+        <iframe id="heatmapPlot" class="plot" src="" alt="Heatmap Plot" frameborder="0" allowfullscreen></iframe> <!-- Interactive Heatmap -->
+        <iframe id="volumeHeatmapPlot" class="plot" src="" alt="Volume Heatmap Plot" frameborder="0" allowfullscreen style="display: none; margin-top: 20px;"></iframe>
 
         <!-- Select Component and Search Sections -->
         <div class="mb-3">
@@ -577,8 +616,12 @@
                     }
                 }
 
+                // Update the src attributes to point to the plot images
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
                 document.getElementById('idpPlot').src = `ICA_IDP_Plots/IC${selectedComponent.replace('IC', '')}_plot.png`;
+                // Do not set heatmapPlot src here; it will be set via modality selection
+
+                // Optionally, show the Manhattan Plot by default
                 showPlot('manhattanPlot');
 
                 setTimeout(() => {
@@ -587,11 +630,23 @@
             }
 
             function showPlot(plotId) {
-                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
-                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
-                // Hide component info when showing plots
-                document.getElementById('componentInfoSection').style.display = 'none';
+    // List of all plot IDs including the new Volume heatmap
+    const plots = ['manhattanPlot', 'idpPlot', 'heatmapPlot', 'volumeHeatmapPlot'];
+    
+    plots.forEach(id => {
+        if (id === plotId) {
+            document.getElementById(id).style.display = 'block';
+        } else {
+            // Only hide plots that are not 'volumeHeatmapPlot'
+            if (id !== 'volumeHeatmapPlot') {
+                document.getElementById(id).style.display = 'none';
             }
+        }
+    });
+    
+    // Hide component info when showing plots
+    document.getElementById('componentInfoSection').style.display = 'none';
+}
 
             function searchTrait(traits) {
                 const searchResults = document.getElementById('searchResults');
@@ -722,8 +777,8 @@
                 });
             }
 
-            // Event listeners for Show buttons (Bottom Controls)
-            document.getElementById('showTraits').addEventListener('click', function() {
+// Event listeners for Show buttons (Bottom Controls)
+document.getElementById('showTraits').addEventListener('click', function() {
                 hideAllSections();
                 document.getElementById('traitsSection').style.display = 'block';
             });
@@ -743,16 +798,50 @@
                 document.getElementById('geneSetSection').style.display = 'block';  
             });
 
-            // Event listeners for Plot buttons (Top Plot Controls)
-            document.getElementById('showManhattan').addEventListener('click', function() {
+// Event listeners for Plot buttons (Top Plot Controls)
+document.getElementById('showManhattan').addEventListener('click', function() {
                 hideAllSections();
                 showPlot('manhattanPlot');
             });
 
             document.getElementById('showIDP').addEventListener('click', function() {
                 hideAllSections();
+                // Show the IDP Plot
                 showPlot('idpPlot');
+                // Toggle the display of the modality dropdown
+                const modalityDropdown = document.getElementById('modalityDropdown');
+                modalityDropdown.style.display = (modalityDropdown.style.display === 'none' || modalityDropdown.style.display === '') ? 'block' : 'none';
             });
+
+// Handle modality selection from dropdown
+document.querySelectorAll('.modality-option').forEach(function(option) {
+    option.addEventListener('click', function(e) {
+        e.preventDefault();
+        const selectedModality = this.getAttribute('data-modality');
+        const selectedComponent = document.getElementById('componentSelect').value;
+        
+        if (!selectedComponent) {
+            alert('Please select a component first.');
+            return;
+        }
+
+        // Update the main heatmapPlot src based on selected modality
+        document.getElementById('heatmapPlot').src = `../../IDP/Brain_Maps/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
+        
+        // Display the main heatmap plot
+        showPlot('heatmapPlot');
+
+        // Handle additional Volume heatmap
+        if (selectedModality.toLowerCase() === 'volume') {
+            const volumePlot = document.getElementById('volumeHeatmapPlot');
+            volumePlot.src = `../../IDP/Brain_Maps/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
+            volumePlot.style.display = 'block';
+        } else {
+            // Hide the Volume heatmap if another modality is selected
+            document.getElementById('volumeHeatmapPlot').style.display = 'none';
+        }
+    });
+});
 
             // Event listener for Tentative Interpretation button (Bottom Controls)
             document.getElementById('toggleComponentInfo').addEventListener('click', function() {
@@ -768,11 +857,13 @@
                 document.getElementById('magmaGenesSection').style.display = 'none';
                 document.getElementById('geneSetSection').style.display = 'none';
                 document.getElementById('componentInfoSection').style.display = 'none';
-            }
-
-            function showPlot(plotId) {
-                document.getElementById('manhattanPlot').style.display = plotId === 'manhattanPlot' ? 'block' : 'none';
-                document.getElementById('idpPlot').style.display = plotId === 'idpPlot' ? 'block' : 'none';
+                // Hide all plots
+                document.getElementById('manhattanPlot').style.display = 'none';
+                document.getElementById('idpPlot').style.display = 'none';
+                document.getElementById('heatmapPlot').style.display = 'none';
+                document.getElementById('volumeHeatmapPlot').style.display = 'none'; 
+                // Keep the modality dropdown visible (since it's now tied to "Show IDP Plot")
+                // No action needed here
             }
 
             // Initialize autocomplete
