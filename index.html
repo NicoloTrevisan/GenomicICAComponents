@@ -323,6 +323,7 @@
                 <li><a class="dropdown-item modality-option" href="#" data-modality="CT">Cortical Thickness</a></li>
                 <li><a class="dropdown-item modality-option" href="#" data-modality="Volume">Brain Volume</a></li>
                 <li><a class="dropdown-item modality-option" href="#" data-modality="area">Cortical Surface Area</a></li>
+                <li><a class="dropdown-item modality-option" href="#" data-modality="Intensity_Cortical">White-Grey Intensity</a></li>
             </ul>
         </div>
 
@@ -619,7 +620,6 @@
                 // Update the src attributes to point to the plot images
                 document.getElementById('manhattanPlot').src = `Manhattan_Plots/Manhattan_${selectedComponent}.png`;
                 document.getElementById('idpPlot').src = `ICA_IDP_Plots/IC${selectedComponent.replace('IC', '')}_plot.png`;
-                // Do not set heatmapPlot src here; it will be set via modality selection
 
                 // Optionally, show the Manhattan Plot by default
                 showPlot('manhattanPlot');
@@ -630,23 +630,23 @@
             }
 
             function showPlot(plotId) {
-    // List of all plot IDs including the new Volume heatmap
-    const plots = ['manhattanPlot', 'idpPlot', 'heatmapPlot', 'volumeHeatmapPlot'];
-    
-    plots.forEach(id => {
-        if (id === plotId) {
-            document.getElementById(id).style.display = 'block';
-        } else {
-            // Only hide plots that are not 'volumeHeatmapPlot'
-            if (id !== 'volumeHeatmapPlot') {
-                document.getElementById(id).style.display = 'none';
+                // List of all plot IDs including the new Volume heatmap
+                const plots = ['manhattanPlot', 'idpPlot', 'heatmapPlot', 'volumeHeatmapPlot'];
+                
+                plots.forEach(id => {
+                    if (id === plotId) {
+                        document.getElementById(id).style.display = 'block';
+                    } else {
+                        // Only hide plots that are not 'volumeHeatmapPlot'
+                        if (id !== 'volumeHeatmapPlot') {
+                            document.getElementById(id).style.display = 'none';
+                        }
+                    }
+                });
+                
+                // Hide component info when showing plots
+                document.getElementById('componentInfoSection').style.display = 'none';
             }
-        }
-    });
-    
-    // Hide component info when showing plots
-    document.getElementById('componentInfoSection').style.display = 'none';
-}
 
             function searchTrait(traits) {
                 const searchResults = document.getElementById('searchResults');
@@ -777,8 +777,8 @@
                 });
             }
 
-// Event listeners for Show buttons (Bottom Controls)
-document.getElementById('showTraits').addEventListener('click', function() {
+            // Event listeners for Show buttons (Bottom Controls)
+            document.getElementById('showTraits').addEventListener('click', function() {
                 hideAllSections();
                 document.getElementById('traitsSection').style.display = 'block';
             });
@@ -798,8 +798,8 @@ document.getElementById('showTraits').addEventListener('click', function() {
                 document.getElementById('geneSetSection').style.display = 'block';  
             });
 
-// Event listeners for Plot buttons (Top Plot Controls)
-document.getElementById('showManhattan').addEventListener('click', function() {
+            // Event listeners for Plot buttons (Top Plot Controls)
+            document.getElementById('showManhattan').addEventListener('click', function() {
                 hideAllSections();
                 showPlot('manhattanPlot');
             });
@@ -813,35 +813,41 @@ document.getElementById('showManhattan').addEventListener('click', function() {
                 modalityDropdown.style.display = (modalityDropdown.style.display === 'none' || modalityDropdown.style.display === '') ? 'block' : 'none';
             });
 
-// Handle modality selection from dropdown
-document.querySelectorAll('.modality-option').forEach(function(option) {
-    option.addEventListener('click', function(e) {
-        e.preventDefault();
-        const selectedModality = this.getAttribute('data-modality');
-        const selectedComponent = document.getElementById('componentSelect').value;
-        
-        if (!selectedComponent) {
-            alert('Please select a component first.');
-            return;
-        }
+            // Handle modality selection from dropdown
+            document.querySelectorAll('.modality-option').forEach(function(option) {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedModality = this.getAttribute('data-modality');
+                    const selectedComponent = document.getElementById('componentSelect').value;
+                    
+                    if (!selectedComponent) {
+                        alert('Please select a component first.');
+                        return;
+                    }
 
-        // Update the main heatmapPlot src based on selected modality
-        document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
-        
-        // Display the main heatmap plot
-        showPlot('heatmapPlot');
-
-        // Handle additional Volume heatmap
-        if (selectedModality.toLowerCase() === 'volume') {
-            const volumePlot = document.getElementById('volumeHeatmapPlot');
-            volumePlot.src = `IDP_html/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
-            volumePlot.style.display = 'block';
-        } else {
-            // Hide the Volume heatmap if another modality is selected
-            document.getElementById('volumeHeatmapPlot').style.display = 'none';
-        }
-    });
-});
+                    // Handle the new modality option for White-Grey Intensity
+                    if (selectedModality === 'Intensity_Cortical') {
+                        // Display cortical intensity heatmap
+                        document.getElementById('heatmapPlot').src = `IDP_html/Intensity_Cortical/IC${selectedComponent.replace('IC', '')}_Intensity_Database_with_IDP_Regions_Cortical_Brain_Heatmap.html`;
+                        // Display subcortical intensity heatmap in the volumeHeatmapPlot frame
+                        const volumePlot = document.getElementById('volumeHeatmapPlot');
+                        volumePlot.src = `IDP_html/Intensity_Subcortical/IC${selectedComponent.replace('IC', '')}_Intensity_Database_with_IDP_Regions_Subcortical_Brain_Heatmap.html`;
+                        showPlot('heatmapPlot');
+                        volumePlot.style.display = 'block';
+                    } else if (selectedModality.toLowerCase() === 'volume') {
+                        document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
+                        showPlot('heatmapPlot');
+                        const volumePlot = document.getElementById('volumeHeatmapPlot');
+                        volumePlot.src = `IDP_html/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
+                        volumePlot.style.display = 'block';
+                    } else {
+                        // For other modalities (CT, area), no additional subcortical plot
+                        document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
+                        showPlot('heatmapPlot');
+                        document.getElementById('volumeHeatmapPlot').style.display = 'none';
+                    }
+                });
+            });
 
             // Event listener for Tentative Interpretation button (Bottom Controls)
             document.getElementById('toggleComponentInfo').addEventListener('click', function() {
