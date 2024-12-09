@@ -76,7 +76,6 @@
             cursor: pointer;
         }
 
-
         .btn-traits {
             background-color: #17a2b8;
             color: white;
@@ -324,6 +323,8 @@
                 <li><a class="dropdown-item modality-option" href="#" data-modality="Volume">Brain Volume</a></li>
                 <li><a class="dropdown-item modality-option" href="#" data-modality="area">Cortical Surface Area</a></li>
                 <li><a class="dropdown-item modality-option" href="#" data-modality="Intensity_Cortical">White-Grey Intensity</a></li>
+                <!-- New DTI (FA) option -->
+                <li><a class="dropdown-item modality-option" href="#" data-modality="DTI_slices_71_103">DTI (FA)</a></li>
             </ul>
         </div>
 
@@ -825,7 +826,6 @@
                         return;
                     }
 
-                    // Handle the new modality option for White-Grey Intensity
                     if (selectedModality === 'Intensity_Cortical') {
                         // Display cortical intensity heatmap
                         document.getElementById('heatmapPlot').src = `IDP_html/Intensity_Cortical/IC${selectedComponent.replace('IC', '')}_Intensity_Database_with_IDP_Regions_Cortical_Brain_Heatmap.html`;
@@ -840,6 +840,12 @@
                         const volumePlot = document.getElementById('volumeHeatmapPlot');
                         volumePlot.src = `IDP_html/Aseg_Volume.csv/IC${selectedComponent.replace('IC', '')}_Aseg_Volume.csv_Aseg_Heatmap.html`;
                         volumePlot.style.display = 'block';
+                    } else if (selectedModality === 'DTI_slices_71_103') {
+                        // Load DTI (FA) slices
+                        document.getElementById('heatmapPlot').src = `IDP_html/DTI_slices_71_103/IC${selectedComponent.replace('IC', '')}_combined_slices.html`;
+                        showPlot('heatmapPlot');
+                        // No volumeHeatmapPlot for DTI, hide it
+                        document.getElementById('volumeHeatmapPlot').style.display = 'none'; 
                     } else {
                         // For other modalities (CT, area), no additional subcortical plot
                         document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
@@ -868,8 +874,6 @@
                 document.getElementById('idpPlot').style.display = 'none';
                 document.getElementById('heatmapPlot').style.display = 'none';
                 document.getElementById('volumeHeatmapPlot').style.display = 'none'; 
-                // Keep the modality dropdown visible (since it's now tied to "Show IDP Plot")
-                // No action needed here
             }
 
             // Initialize autocomplete
