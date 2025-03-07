@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Plotly - Single Trace, Color by Group</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <h1>Single Trace, Color by Group, Sorted by Magnitude</h1>
+  <div id="plotDiv"></div>
+  <script>
+    const fullData = [
+      { Phenotype: "Non-cancer illness code", log_pval: 5.2, group: "Physical Health" },
+      { Phenotype: "Social support",           log_pval: 4.1, group: "Social and Economic Factors" },
+      { Phenotype: "Body size at age 10",      log_pval: 3.5, group: "Physical Attributes" },
+      { Phenotype: "Hairbalading pattern",     log_pval: -2.8, group: "Physical Attributes" },
+      { Phenotype: "Mobile phone usage",       log_pval: -1.5, group: "Mobile Phone Usage" }
+    ];
+
+    const groupColors = {
+      "Physical Attributes": "#1F77B4",
+      "Physical Health": "#FF7F0E",
+      "Social and Economic Factors": "#9467BD",
+      "Mobile Phone Usage": "#7F7F7F",
+      "Other": "#999999"
+    };
+
+    // Sort by magnitude
+    const sorted = [...fullData].sort((a,b) => Math.abs(b.log_pval) - Math.abs(a.log_pval));
+
+    // Single arrays
+    const x = sorted.map(d => d.log_pval);
+    const y = sorted.map(d => d.Phenotype);
+    const text = sorted.map(d => `Phenotype: ${d.Phenotype}`);
+    const colors = sorted.map(d => groupColors[d.group] || groupColors["Other"]);
+
+    // Reverse if you want the biggest at the top
+    x.reverse();
+    y.reverse();
+    text.reverse();
+    colors.reverse();
+
+    const trace = {
+      type: "bar",
+      orientation: "h",
+      x: x,
+      y: y,
+      text: text,
+      hoverinfo: "text",
+      marker: { color: colors }
+    };
+
+    Plotly.newPlot("plotDiv", [trace], {
+      title: "Single Trace, Color by Group",
+      margin: { l: 300, r: 50, t: 80, b: 80 },
+      hoverlabel: { align: "left" },
+      xaxis: { title: "-log10(p-value) * sign(log odds)" },
+      yaxis: { automargin: true },
+      height: 600
+    });
+  </script>
+</body>
+</html>

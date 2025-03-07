@@ -66,7 +66,7 @@
             color: white;
         }
 
-        .btn-heatmap:hover, 
+        .btn-heatmap:hover,
         .btn-heatmap:focus {
             background-color: #0056b3; /* Darker blue on hover */
             color: white;
@@ -189,7 +189,7 @@
             transition: all 0.3s ease-in-out;
         }
 
-        .navbar-nav .nav-link:hover, 
+        .navbar-nav .nav-link:hover,
         .navbar-nav .nav-link:focus {
             background-color: #00c5ff; /* Darker blue on hover */
             color: white;
@@ -203,14 +203,14 @@
         }
 
         /* Style each dropdown item */
-        .navbar-nav .dropdown-menu .dropdown-item {
+        .navbar-nav .dropdown-menu .dropdown-menu .dropdown-item {
             padding: 10px 20px;
             background-color: #f8f9fa;
             color: #333;
             transition: all 0.3s ease-in-out;
         }
 
-        .navbar-nav .dropdown-menu .dropdown-item:hover, 
+        .navbar-nav .dropdown-menu .dropdown-item:hover,
         .navbar-nav .dropdown-menu .dropdown-item:focus {
             background-color: #e9ecef; /* Lighter gray on hover */
             color: #007bff;
@@ -260,6 +260,14 @@
             }
         }
 
+        /* Style for section description sentences */
+        .section-description {
+            text-align: center;
+            margin-bottom: 10px;
+            font-style: italic;
+            display: none; /* Hidden by default */
+        }
+
     </style>
 </head>
 
@@ -272,7 +280,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                
+
                 <!-- Collapsible navbar content -->
                 <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                     <ul class="navbar-nav">
@@ -284,10 +292,10 @@
                                 <li><a class="dropdown-item" href="https://onlinelibrary.wiley.com/doi/full/10.1111/gbb.12876" target="_blank">Reference Paper</a></li>
                                 <li><a class="dropdown-item" href="mailto:nicolo.trevisan@radboudumc.nl">Contact Us</a></li>
                                 <li><a class="dropdown-item" href="https://github.com/NicoloTrevisan/GenomicICAComponents" target="_blank">Github Repository</a></li>
-                                <li><a class="dropdown-item" href="https://github.com/NicoloTrevisan/GenomicICAComponents/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a></li> <!-- New README Link -->
+                                <li><a class="dropdown-item" href="https://github.com/NicoloTrevisan/GenomicICAComponents/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a></li>
                                 <li><a class="dropdown-item" href="https://forms.gle/g9SMGgBac6xvFDRWA" target="_blank">Leave a Comment</a></li>
                                 <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=5oBdGZorJzw" target="_blank">OHBM Talk</a></li>
-                                
+
                                 <li><hr class="dropdown-divider"></li>
                                 <li class="dropdown-item">People Involved:</li>
                                 <li class="dropdown-item">Lennart M. Oblong</li>
@@ -331,8 +339,10 @@
         <!-- Embedded Interactive Plots -->
         <img id="manhattanPlot" class="plot" src="" alt="Manhattan Plot">
         <img id="idpPlot" class="plot" src="" alt="IDP Plot">
-        <iframe id="heatmapPlot" class="plot" src="" alt="Heatmap Plot" frameborder="0" allowfullscreen></iframe> <!-- Interactive Heatmap -->
+        <iframe id="heatmapPlot" class="plot" src="" alt="Heatmap Plot" frameborder="0" allowfullscreen></iframe>
         <iframe id="volumeHeatmapPlot" class="plot" src="" alt="Volume Heatmap Plot" frameborder="0" allowfullscreen style="display: none; margin-top: 20px;"></iframe>
+        <!-- New Out of Sample iframe -->
+        <iframe id="outOfSamplePlot" class="plot" src="" alt="Out of Sample Plot" frameborder="0" allowfullscreen style="display: none;"></iframe>
 
         <!-- Select Component and Search Sections -->
         <div class="mb-3">
@@ -360,6 +370,8 @@
             <button id="showGenes" class="btn btn-custom btn-genes me-2">Show Genes</button>
             <button id="showMagma" class="btn btn-custom btn-magma me-2">Show Genes from MAGMA</button>
             <button id="showGeneSet" class="btn btn-custom btn-gene-set me-2">Show Gene Set</button>
+            <!-- New Out of Sample button -->
+            <button id="showOutOfSample" class="btn btn-custom btn-outsample me-2">Out of Sample</button>
             <button id="toggleComponentInfo" class="btn btn-custom btn-info">Tentative Interpretation</button>
         </div>
 
@@ -379,8 +391,9 @@
             </table>
         </div>
 
+        <!-- Traits Section -->
         <div id="traitsSection" style="display: none;">
-            <div class="table-responsive">
+            <p id="traitsDescription" class="section-description">Association with traits of the GWAS Catalog</p> <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-light">
                         <tr>
@@ -396,7 +409,9 @@
             </div>
         </div>
 
+        <!-- Genes Section -->
         <div id="genesSection" style="display: none;">
+            <p id="genesDescription" class="section-description">Genes associated via locus gene mapping</p>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-light">
@@ -421,7 +436,9 @@
             </div>
         </div>
 
+        <!-- Magma Genes Section -->
         <div id="magmaGenesSection" style="display: none;">
+            <p id="magmaGenesDescription" class="section-description">Gene association identified by MAGMA analysis</p>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-light">
@@ -540,8 +557,8 @@
                 const componentData = components[selectedComponent];
                 detailsTableBody.innerHTML = '';
                 genesTableBody.innerHTML = '';
-                magmaGenesTableBody.innerHTML = ''; 
-                geneSetTableBody.innerHTML = ''; 
+                magmaGenesTableBody.innerHTML = '';
+                geneSetTableBody.innerHTML = '';
 
                 // Hide all sections except componentInfoSection if it's selected
                 if (selectedComponent) {
@@ -631,9 +648,8 @@
             }
 
             function showPlot(plotId) {
-                // List of all plot IDs including the new Volume heatmap
-                const plots = ['manhattanPlot', 'idpPlot', 'heatmapPlot', 'volumeHeatmapPlot'];
-                
+                // List of all plot IDs including the new Volume heatmap and Out of Sample plot
+                const plots = ['manhattanPlot', 'idpPlot', 'heatmapPlot', 'volumeHeatmapPlot', 'outOfSamplePlot'];
                 plots.forEach(id => {
                     if (id === plotId) {
                         document.getElementById(id).style.display = 'block';
@@ -644,9 +660,10 @@
                         }
                     }
                 });
-                
+
                 // Hide component info when showing plots
                 document.getElementById('componentInfoSection').style.display = 'none';
+                hideSectionDescriptions(); // Hide section descriptions when plots are shown
             }
 
             function searchTrait(traits) {
@@ -778,25 +795,51 @@
                 });
             }
 
+            function hideSectionDescriptions() {
+                document.querySelectorAll('.section-description').forEach(desc => {
+                    desc.style.display = 'none';
+                });
+            }
+
             // Event listeners for Show buttons (Bottom Controls)
             document.getElementById('showTraits').addEventListener('click', function() {
                 hideAllSections();
                 document.getElementById('traitsSection').style.display = 'block';
+                document.getElementById('traitsDescription').style.display = 'block'; // Show Traits description
+                hideSectionDescriptionsExcept('traitsDescription');
             });
 
             document.getElementById('showGenes').addEventListener('click', function() {
                 hideAllSections();
                 document.getElementById('genesSection').style.display = 'block';
+                document.getElementById('genesDescription').style.display = 'block'; // Show Genes description
+                hideSectionDescriptionsExcept('genesDescription');
             });
 
             document.getElementById('showMagma').addEventListener('click', function() {
                 hideAllSections();
                 document.getElementById('magmaGenesSection').style.display = 'block';
+                document.getElementById('magmaGenesDescription').style.display = 'block'; // Show Magma Genes description
+                hideSectionDescriptionsExcept('magmaGenesDescription');
             });
 
             document.getElementById('showGeneSet').addEventListener('click', function() {
                 hideAllSections();
-                document.getElementById('geneSetSection').style.display = 'block';  
+                document.getElementById('geneSetSection').style.display = 'block';
+                hideSectionDescriptions(); // Gene Set doesn't have a description for now, hide all
+            });
+
+            // New Out of Sample button event listener
+            document.getElementById('showOutOfSample').addEventListener('click', function() {
+                hideAllSections();
+                const selectedComponent = document.getElementById('componentSelect').value;
+                if (!selectedComponent) {
+                    alert('Please select a component first.');
+                    return;
+                }
+                // Set the src attribute based on the selected component (e.g., IC1 -> PCS_interactive_PGS1.html)
+                document.getElementById('outOfSamplePlot').src = `html_plots/PCS_interactive_PGS${selectedComponent.replace('IC', '')}.html`;
+                showPlot('outOfSamplePlot');
             });
 
             // Event listeners for Plot buttons (Top Plot Controls)
@@ -820,7 +863,7 @@
                     e.preventDefault();
                     const selectedModality = this.getAttribute('data-modality');
                     const selectedComponent = document.getElementById('componentSelect').value;
-                    
+
                     if (!selectedComponent) {
                         alert('Please select a component first.');
                         return;
@@ -845,7 +888,7 @@
                         document.getElementById('heatmapPlot').src = `IDP_html/DTI_slices_71_103/IC${selectedComponent.replace('IC', '')}_combined_slices.html`;
                         showPlot('heatmapPlot');
                         // No volumeHeatmapPlot for DTI, hide it
-                        document.getElementById('volumeHeatmapPlot').style.display = 'none'; 
+                        document.getElementById('volumeHeatmapPlot').style.display = 'none';
                     } else {
                         // For other modalities (CT, area), no additional subcortical plot
                         document.getElementById('heatmapPlot').src = `IDP_html/${selectedModality}/IC${selectedComponent.replace('IC', '')}_${selectedModality}_DKT_Heatmap.html`;
@@ -860,6 +903,7 @@
                 hideAllSections();
                 const componentInfo = document.getElementById('componentInfoSection');
                 componentInfo.style.display = 'block';
+                hideSectionDescriptions(); // Hide section descriptions when component info is shown
             });
 
             function hideAllSections() {
@@ -869,8 +913,7 @@
                 document.getElementById('magmaGenesSection').style.display = 'none';
                 document.getElementById('geneSetSection').style.display = 'none';
                 document.getElementById('componentInfoSection').style.display = 'none';
-                // Hide all plots (deleted lines were here)
-
+                hideSectionDescriptions(); // Also hide section descriptions when hiding all sections
             }
 
             // Initialize autocomplete

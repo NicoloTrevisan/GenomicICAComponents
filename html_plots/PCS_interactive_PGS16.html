@@ -1,0 +1,1447 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>PCS Plot - PGS16</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { background-color: #ffffff; font-family: sans-serif; margin: 20px; }
+    .controls { margin-bottom: 10px; }
+    select { font-size: 14px; margin-right: 10px; }
+    #plotDiv { width: 100%; max-width: 1200px; margin: 0 auto; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Interactive PCS Plot - PGS16</h1>
+  <div class="controls">
+    <label>Sort Method:</label>
+    <select id="sortSelect">
+      <option value="Magnitude">Magnitude</option>
+      <option value="Group">Group</option>
+    </select>
+    <label>Number of Traits:</label>
+    <select id="nTraitsSelect">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="All">All</option>
+    </select>
+  </div>
+  <div id="plotDiv"></div>
+  <script>
+    const fullData = [
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1608",
+    "log_pval": -1.585,
+    "group": "Physical Health",
+    "p_value": 0.026,
+    "log_odds": -0.26
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1456",
+    "log_pval": 0.6882,
+    "group": "Physical Health",
+    "p_value": 0.205,
+    "log_odds": 0.039
+  },
+  {
+    "Phenotype": "Frequency of memory loss due to drinking alcohol in last year.0 2 vs 3",
+    "log_pval": 0.4572,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.349,
+    "log_odds": 0.039
+  },
+  {
+    "Phenotype": "Frequency of feeling guilt or remorse after drinking alcohol in last year.0 2 vs 4",
+    "log_pval": 1.4559,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.035,
+    "log_odds": 0.08
+  },
+  {
+    "Phenotype": "Numeric memory test - Maximum digits remembered correctly.0 5 vs 10",
+    "log_pval": 0.0004,
+    "group": "Cognitive Performance",
+    "p_value": 0.999,
+    "log_odds": 0
+  },
+  {
+    "Phenotype": "Numeric memory test - Maximum digits remembered correctly.0 5 vs 9",
+    "log_pval": -0.5302,
+    "group": "Cognitive Performance",
+    "p_value": 0.295,
+    "log_odds": -0.024
+  },
+  {
+    "Phenotype": "Financial situation satisfaction.0 1 vs 6",
+    "log_pval": 0.6676,
+    "group": "Social and Economic Factors",
+    "p_value": 0.215,
+    "log_odds": 0.042
+  },
+  {
+    "Phenotype": "Frequency of memory loss due to drinking alcohol in last year.0 1 vs 3",
+    "log_pval": 0.6073,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.247,
+    "log_odds": 0.046
+  },
+  {
+    "Phenotype": "Happiness.0 1 vs 4",
+    "log_pval": 0.1798,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.661,
+    "log_odds": 0.011
+  },
+  {
+    "Phenotype": "Comparative height size at age 10.0 1 vs 3",
+    "log_pval": 0.0752,
+    "group": "Physical Attributes",
+    "p_value": 0.841,
+    "log_odds": 0.0012
+  },
+  {
+    "Phenotype": "Numeric memory test - Maximum digits remembered correctly.0 5 vs 8",
+    "log_pval": -0.5719,
+    "group": "Cognitive Performance",
+    "p_value": 0.268,
+    "log_odds": -0.021
+  },
+  {
+    "Phenotype": "Financial situation satisfaction.0 1 vs 4",
+    "log_pval": 0.0164,
+    "group": "Social and Economic Factors",
+    "p_value": 0.963,
+    "log_odds": 0.0009
+  },
+  {
+    "Phenotype": "Numeric memory test - Maximum digits remembered correctly.0 6 vs 9",
+    "log_pval": 0.3546,
+    "group": "Cognitive Performance",
+    "p_value": 0.442,
+    "log_odds": 0.014
+  },
+  {
+    "Phenotype": "Oily fish intake.0 0 vs 4",
+    "log_pval": 0.067,
+    "group": "Diet",
+    "p_value": 0.857,
+    "log_odds": 0.0047
+  },
+  {
+    "Phenotype": "Happiness and subjective well-being - General happiness with own health.0 1 vs 4",
+    "log_pval": 0.8447,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.143,
+    "log_odds": 0.027
+  },
+  {
+    "Phenotype": "Amount of alcohol drunk on a typical drinking day.0 1 vs 5",
+    "log_pval": 0.0931,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.807,
+    "log_odds": 0.0061
+  },
+  {
+    "Phenotype": "Traumatic events - Able to pay rentmorgage as an adult.0 2 vs 4",
+    "log_pval": 0.2604,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.549,
+    "log_odds": 0.015
+  },
+  {
+    "Phenotype": "Skin colour.0 1 vs 4",
+    "log_pval": -1.9586,
+    "group": "Physical Attributes",
+    "p_value": 0.011,
+    "log_odds": -0.046
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1065",
+    "log_pval": -3.5086,
+    "group": "Physical Health",
+    "p_value": 0.0003,
+    "log_odds": -0.018
+  },
+  {
+    "Phenotype": "Relative age of first facial hair male.0 1 vs 3",
+    "log_pval": 1.4949,
+    "group": "Physical Attributes",
+    "p_value": 0.032,
+    "log_odds": 0.032
+  },
+  {
+    "Phenotype": "Vascularheart problems diagnosed by doctor.0",
+    "log_pval": 6.0223,
+    "group": "Physical Health",
+    "p_value": 9.5e-07,
+    "log_odds": 0.023
+  },
+  {
+    "Phenotype": "Vascularheart problems diagnosed by doctor.4",
+    "log_pval": -5.8239,
+    "group": "Physical Health",
+    "p_value": 1.5e-06,
+    "log_odds": -0.023
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 2 vs 4",
+    "log_pval": -2.9208,
+    "group": "Physical Attributes",
+    "p_value": 0.0012,
+    "log_odds": -0.032
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 2 vs 5",
+    "log_pval": -1.7959,
+    "group": "Physical Attributes",
+    "p_value": 0.016,
+    "log_odds": -0.036
+  },
+  {
+    "Phenotype": "Numeric memory test - Maximum digits remembered correctly.0 6 vs 8",
+    "log_pval": 0.4962,
+    "group": "Cognitive Performance",
+    "p_value": 0.319,
+    "log_odds": 0.014
+  },
+  {
+    "Phenotype": "Financial situation satisfaction.0 1 vs 2",
+    "log_pval": 0.4012,
+    "group": "Social and Economic Factors",
+    "p_value": 0.397,
+    "log_odds": 0.012
+  },
+  {
+    "Phenotype": "Frequency of walking for pleasure in last 4 weeks.0 1 vs 6",
+    "log_pval": -0.4908,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.323,
+    "log_odds": -0.011
+  },
+  {
+    "Phenotype": "Financial situation satisfaction.0 1 vs 3",
+    "log_pval": 0.0894,
+    "group": "Social and Economic Factors",
+    "p_value": 0.814,
+    "log_odds": 0.0033
+  },
+  {
+    "Phenotype": "Happiness and subjective well-being - General happiness with own health.0 1 vs 3",
+    "log_pval": 1.0177,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.096,
+    "log_odds": 0.024
+  },
+  {
+    "Phenotype": "Comparative height size at age 10.0 2 vs 3",
+    "log_pval": 1.6778,
+    "group": "Physical Attributes",
+    "p_value": 0.021,
+    "log_odds": 0.011
+  },
+  {
+    "Phenotype": "Comparative body size at age 10.0 1 vs 3",
+    "log_pval": -10.1367,
+    "group": "Physical Attributes",
+    "p_value": 7.3e-11,
+    "log_odds": -0.043
+  },
+  {
+    "Phenotype": "Overall health rating.0 1 vs 4",
+    "log_pval": 1.0915,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.081,
+    "log_odds": 0.021
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 3 vs 5",
+    "log_pval": 0.2557,
+    "group": "Social and Economic Factors",
+    "p_value": 0.555,
+    "log_odds": 0.0064
+  },
+  {
+    "Phenotype": "Frequency of walking for pleasure in last 4 weeks.0 1 vs 5",
+    "log_pval": -0.5884,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.258,
+    "log_odds": -0.013
+  },
+  {
+    "Phenotype": "Overall health rating.0 1 vs 3",
+    "log_pval": 2,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.01,
+    "log_odds": 0.019
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 2 vs 5",
+    "log_pval": -0.3468,
+    "group": "Social and Economic Factors",
+    "p_value": 0.45,
+    "log_odds": -0.0085
+  },
+  {
+    "Phenotype": "Oily fish intake.0 0 vs 3",
+    "log_pval": -0.9469,
+    "group": "Diet",
+    "p_value": 0.113,
+    "log_odds": -0.013
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 1 vs 5",
+    "log_pval": 0.0975,
+    "group": "Social and Economic Factors",
+    "p_value": 0.799,
+    "log_odds": 0.0031
+  },
+  {
+    "Phenotype": "Male-specific factors - Hairbalding pattern.0 1 vs 4",
+    "log_pval": 0.1599,
+    "group": "Physical Attributes",
+    "p_value": 0.692,
+    "log_odds": 0.0035
+  },
+  {
+    "Phenotype": "Neckshoulder pain for 3plus months.0",
+    "log_pval": -1.0706,
+    "group": "Physical Health",
+    "p_value": 0.085,
+    "log_odds": -0.016
+  },
+  {
+    "Phenotype": "Comparative height size at age 10.0 1 vs 2",
+    "log_pval": -1.0655,
+    "group": "Physical Attributes",
+    "p_value": 0.086,
+    "log_odds": -0.0091
+  },
+  {
+    "Phenotype": "Frequency of walking for pleasure in last 4 weeks.0 1 vs 4",
+    "log_pval": -0.9431,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.114,
+    "log_odds": -0.016
+  },
+  {
+    "Phenotype": "Duration walking for pleasure.0 4 vs 7",
+    "log_pval": -0.9547,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.111,
+    "log_odds": -0.018
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1081",
+    "log_pval": -0.6055,
+    "group": "Physical Health",
+    "p_value": 0.248,
+    "log_odds": -0.02
+  },
+  {
+    "Phenotype": "Job involves heavy manual or physical work.0 1 vs 4",
+    "log_pval": -0.8894,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.129,
+    "log_odds": -0.017
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 2 vs 3",
+    "log_pval": -2.2924,
+    "group": "Physical Attributes",
+    "p_value": 0.0051,
+    "log_odds": -0.028
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 1 vs 5",
+    "log_pval": -1.3979,
+    "group": "Physical Attributes",
+    "p_value": 0.04,
+    "log_odds": -0.026
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 1 vs 4",
+    "log_pval": 1.2596,
+    "group": "Physical Attributes",
+    "p_value": 0.055,
+    "log_odds": 0.013
+  },
+  {
+    "Phenotype": "Vascularheart problems diagnosed by doctor.3",
+    "log_pval": -0.7399,
+    "group": "Physical Health",
+    "p_value": 0.182,
+    "log_odds": -0.021
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1113",
+    "log_pval": 0.5114,
+    "group": "Physical Health",
+    "p_value": 0.308,
+    "log_odds": 0.017
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1309",
+    "log_pval": -0.8539,
+    "group": "Physical Health",
+    "p_value": 0.14,
+    "log_odds": -0.024
+  },
+  {
+    "Phenotype": "Skin colour.0 1 vs 3",
+    "log_pval": -0.9788,
+    "group": "Physical Attributes",
+    "p_value": 0.105,
+    "log_odds": -0.014
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 1 vs 3",
+    "log_pval": 2.1427,
+    "group": "Physical Attributes",
+    "p_value": 0.0072,
+    "log_odds": 0.017
+  },
+  {
+    "Phenotype": "Light smokers, at least 100 smokes in lifetime.0",
+    "log_pval": -0.4342,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.368,
+    "log_odds": -0.0072
+  },
+  {
+    "Phenotype": "Hot drink temperature.0 0 vs 2",
+    "log_pval": 0.5686,
+    "group": "Diet",
+    "p_value": 0.27,
+    "log_odds": 0.008
+  },
+  {
+    "Phenotype": "Cheese intake.0 1 vs 4",
+    "log_pval": -0.0273,
+    "group": "Diet",
+    "p_value": 0.939,
+    "log_odds": -0.0006
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1075",
+    "log_pval": -0.1481,
+    "group": "Physical Health",
+    "p_value": 0.711,
+    "log_odds": -0.0049
+  },
+  {
+    "Phenotype": "Number of daysweek of vigorous physical activity 10plus minutes.0 1 vs 5",
+    "log_pval": 0.5686,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.27,
+    "log_odds": 0.011
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 1 vs 4",
+    "log_pval": -1.3979,
+    "group": "Physical Attributes",
+    "p_value": 0.04,
+    "log_odds": -0.024
+  },
+  {
+    "Phenotype": "Vascularheart problems diagnosed by doctor.1",
+    "log_pval": -0.2815,
+    "group": "Physical Health",
+    "p_value": 0.523,
+    "log_odds": -0.0084
+  },
+  {
+    "Phenotype": "Able to confide.0 0 vs 4",
+    "log_pval": 0.3872,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.41,
+    "log_odds": 0.0073
+  },
+  {
+    "Phenotype": "Traumatic events - Someone to take to doctor when needed as a child.0 3 vs 4",
+    "log_pval": 0.6459,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.226,
+    "log_odds": 0.015
+  },
+  {
+    "Phenotype": "Use of sunuv protection.0 1 vs 4",
+    "log_pval": -0.059,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.873,
+    "log_odds": -0.0015
+  },
+  {
+    "Phenotype": "Male-specific factors - Hairbalding pattern.0 1 vs 3",
+    "log_pval": 0.7471,
+    "group": "Physical Attributes",
+    "p_value": 0.179,
+    "log_odds": 0.011
+  },
+  {
+    "Phenotype": "Smoking status.0 0 vs 2",
+    "log_pval": -0.2269,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.593,
+    "log_odds": -0.0037
+  },
+  {
+    "Phenotype": "Vascularheart problems diagnosed by doctor.2",
+    "log_pval": -0.057,
+    "group": "Physical Health",
+    "p_value": 0.877,
+    "log_odds": -0.0018
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1074",
+    "log_pval": 0.1062,
+    "group": "Physical Health",
+    "p_value": 0.783,
+    "log_odds": 0.0031
+  },
+  {
+    "Phenotype": "Past tobacco smoking.0 1 vs 2",
+    "log_pval": 0.7305,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.186,
+    "log_odds": 0.01
+  },
+  {
+    "Phenotype": "Non-butter spread type details.0 4 vs 7",
+    "log_pval": -1.0362,
+    "group": "Diet",
+    "p_value": 0.092,
+    "log_odds": -0.015
+  },
+  {
+    "Phenotype": "Bread type.0 0 vs 1",
+    "log_pval": 0.219,
+    "group": "Diet",
+    "p_value": 0.604,
+    "log_odds": 0.0058
+  },
+  {
+    "Phenotype": "Back pain for 3plus months.0",
+    "log_pval": -1.1805,
+    "group": "Physical Health",
+    "p_value": 0.066,
+    "log_odds": -0.016
+  },
+  {
+    "Phenotype": "Frequency of stair climbing in last 4 weeks.0 3 vs 5",
+    "log_pval": 0.1296,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.742,
+    "log_odds": 0.003
+  },
+  {
+    "Phenotype": "Cereal type.0 0 vs 4",
+    "log_pval": -0.2534,
+    "group": "Diet",
+    "p_value": 0.558,
+    "log_odds": -0.0042
+  },
+  {
+    "Phenotype": "Salt added to food.0 2 vs 4",
+    "log_pval": 0.0448,
+    "group": "Diet",
+    "p_value": 0.902,
+    "log_odds": 0.0013
+  },
+  {
+    "Phenotype": "Own or rent accommodation lived in.0 1 vs 3",
+    "log_pval": 0.4895,
+    "group": "Social and Economic Factors",
+    "p_value": 0.324,
+    "log_odds": 0.0092
+  },
+  {
+    "Phenotype": "Current tobacco smoking.0 0 vs 2",
+    "log_pval": -0.6198,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.24,
+    "log_odds": -0.0088
+  },
+  {
+    "Phenotype": "Job involves mainly walking or standing.0 1 vs 4",
+    "log_pval": 0.0287,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.936,
+    "log_odds": 0.0006
+  },
+  {
+    "Phenotype": "Salt added to food.0 1 vs 4",
+    "log_pval": -0.3107,
+    "group": "Diet",
+    "p_value": 0.489,
+    "log_odds": -0.0068
+  },
+  {
+    "Phenotype": "Health satisfaction.0 2 vs 3",
+    "log_pval": 0.2132,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.612,
+    "log_odds": 0.0041
+  },
+  {
+    "Phenotype": "Male-specific factors - Hairbalding pattern.0 1 vs 2",
+    "log_pval": 0.1739,
+    "group": "Physical Attributes",
+    "p_value": 0.67,
+    "log_odds": 0.0035
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 1 vs 4",
+    "log_pval": -0.3363,
+    "group": "Social and Economic Factors",
+    "p_value": 0.461,
+    "log_odds": -0.0056
+  },
+  {
+    "Phenotype": "Cereal type.0 1 vs 4",
+    "log_pval": -0.032,
+    "group": "Diet",
+    "p_value": 0.929,
+    "log_odds": -0.0007
+  },
+  {
+    "Phenotype": "Number of daysweek of moderate physical activity 10plus minutes.0 4 vs 7",
+    "log_pval": 0.3696,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.427,
+    "log_odds": 0.0064
+  },
+  {
+    "Phenotype": "Illnesses of siblings.8",
+    "log_pval": -0.0306,
+    "group": "Family History",
+    "p_value": 0.932,
+    "log_odds": -0.0005
+  },
+  {
+    "Phenotype": "Oily fish intake.0 0 vs 2",
+    "log_pval": -0.7399,
+    "group": "Diet",
+    "p_value": 0.182,
+    "log_odds": -0.0094
+  },
+  {
+    "Phenotype": "Ever had hysterectomy womb removed female.0",
+    "log_pval": 0.0867,
+    "group": "Physical Health",
+    "p_value": 0.819,
+    "log_odds": 0.0025
+  },
+  {
+    "Phenotype": "Comparative body size at age 10.0 1 vs 2",
+    "log_pval": -8.9208,
+    "group": "Physical Attributes",
+    "p_value": 1.2e-09,
+    "log_odds": -0.028
+  },
+  {
+    "Phenotype": "Social support - Leisuresocial activities.3",
+    "log_pval": 0.2343,
+    "group": "Social and Economic Factors",
+    "p_value": 0.583,
+    "log_odds": 0.0032
+  },
+  {
+    "Phenotype": "Salt added to food.0 1 vs 3",
+    "log_pval": 0.6253,
+    "group": "Diet",
+    "p_value": 0.237,
+    "log_odds": 0.0078
+  },
+  {
+    "Phenotype": "Major dietary changes in the last 5 years.0 1 vs 2",
+    "log_pval": 0.4237,
+    "group": "Diet",
+    "p_value": 0.377,
+    "log_odds": 0.0064
+  },
+  {
+    "Phenotype": "Coffee type.0 1 vs 3",
+    "log_pval": 1.0555,
+    "group": "Diet",
+    "p_value": 0.088,
+    "log_odds": 0.012
+  },
+  {
+    "Phenotype": "Own or rent accommodation lived in.0 2 vs 3",
+    "log_pval": 0.1831,
+    "group": "Social and Economic Factors",
+    "p_value": 0.656,
+    "log_odds": 0.0043
+  },
+  {
+    "Phenotype": "Leg pain on walking.0",
+    "log_pval": 0.0209,
+    "group": "Physical Health",
+    "p_value": 0.953,
+    "log_odds": 0.0005
+  },
+  {
+    "Phenotype": "Usual walking pace.0 1 vs 3",
+    "log_pval": -1.2676,
+    "group": "Physical Attributes",
+    "p_value": 0.054,
+    "log_odds": -0.017
+  },
+  {
+    "Phenotype": "Alcohol intake frequency.0 2 vs 5",
+    "log_pval": 0.433,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.369,
+    "log_odds": 0.007
+  },
+  {
+    "Phenotype": "Alcohol intake frequency.0 1 vs 5",
+    "log_pval": 0.3893,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.408,
+    "log_odds": 0.0066
+  },
+  {
+    "Phenotype": "Weekly usage of mobile phone in last 3 months.0 0 vs 2",
+    "log_pval": -0.8794,
+    "group": "Mobile Phone Usage",
+    "p_value": 0.132,
+    "log_odds": -0.011
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1473",
+    "log_pval": -0.9318,
+    "group": "Physical Health",
+    "p_value": 0.117,
+    "log_odds": -0.01
+  },
+  {
+    "Phenotype": "Length of mobile phone use.0 0 vs 3",
+    "log_pval": -0.9547,
+    "group": "Mobile Phone Usage",
+    "p_value": 0.111,
+    "log_odds": -0.01
+  },
+  {
+    "Phenotype": "Oily fish intake.0 0 vs 1",
+    "log_pval": -0.3197,
+    "group": "Diet",
+    "p_value": 0.479,
+    "log_odds": -0.005
+  },
+  {
+    "Phenotype": "Use of sunuv protection.0 1 vs 3",
+    "log_pval": 0.1931,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.641,
+    "log_odds": 0.0038
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 3 vs 4",
+    "log_pval": -0.0259,
+    "group": "Social and Economic Factors",
+    "p_value": 0.942,
+    "log_odds": -0.0005
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1220",
+    "log_pval": 0.1124,
+    "group": "Physical Health",
+    "p_value": 0.772,
+    "log_odds": 0.003
+  },
+  {
+    "Phenotype": "Cheese intake.0 1 vs 3",
+    "log_pval": -0.5784,
+    "group": "Diet",
+    "p_value": 0.264,
+    "log_odds": -0.0066
+  },
+  {
+    "Phenotype": "Types of transport used excluding work.4",
+    "log_pval": 0.2069,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.621,
+    "log_odds": 0.004
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 1 vs 2",
+    "log_pval": 0.1379,
+    "group": "Social and Economic Factors",
+    "p_value": 0.728,
+    "log_odds": 0.0022
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 3 vs 4",
+    "log_pval": -0.2125,
+    "group": "Physical Attributes",
+    "p_value": 0.613,
+    "log_odds": -0.0033
+  },
+  {
+    "Phenotype": "Number of vehicles in household.0 1 vs 3",
+    "log_pval": -1.0969,
+    "group": "Social and Economic Factors",
+    "p_value": 0.08,
+    "log_odds": -0.014
+  },
+  {
+    "Phenotype": "Pain types experienced in last month.4",
+    "log_pval": -0.2725,
+    "group": "Physical Health",
+    "p_value": 0.534,
+    "log_odds": -0.0029
+  },
+  {
+    "Phenotype": "Bread type.0 1 vs 3",
+    "log_pval": -0.1421,
+    "group": "Diet",
+    "p_value": 0.721,
+    "log_odds": -0.0017
+  },
+  {
+    "Phenotype": "Length of mobile phone use.0 0 vs 4",
+    "log_pval": -1.0315,
+    "group": "Mobile Phone Usage",
+    "p_value": 0.093,
+    "log_odds": -0.011
+  },
+  {
+    "Phenotype": "Oily fish intake.0 1 vs 3",
+    "log_pval": -0.7595,
+    "group": "Diet",
+    "p_value": 0.174,
+    "log_odds": -0.0083
+  },
+  {
+    "Phenotype": "Smoking status.0 1 vs 2",
+    "log_pval": -0.8827,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.131,
+    "log_odds": -0.011
+  },
+  {
+    "Phenotype": "Attendancedisabilitymobility allowance.2",
+    "log_pval": -0.1068,
+    "group": "Social and Economic Factors",
+    "p_value": 0.782,
+    "log_odds": -0.0027
+  },
+  {
+    "Phenotype": "Transport type for commuting to job workplace.3",
+    "log_pval": -1.5528,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.028,
+    "log_odds": -0.016
+  },
+  {
+    "Phenotype": "Use of sunuv protection.0 2 vs 4",
+    "log_pval": -0.5622,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.274,
+    "log_odds": -0.0063
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 2 vs 4",
+    "log_pval": 0.384,
+    "group": "Physical Attributes",
+    "p_value": 0.413,
+    "log_odds": 0.0048
+  },
+  {
+    "Phenotype": "Illnesses of mother.8",
+    "log_pval": -2.7447,
+    "group": "Family History",
+    "p_value": 0.0018,
+    "log_odds": -0.014
+  },
+  {
+    "Phenotype": "Illnesses of siblings.0",
+    "log_pval": -0.5834,
+    "group": "Family History",
+    "p_value": 0.261,
+    "log_odds": -0.0088
+  },
+  {
+    "Phenotype": "Diabetes diagnosed by doctor.0",
+    "log_pval": -0.0487,
+    "group": "Physical Health",
+    "p_value": 0.894,
+    "log_odds": -0.0013
+  },
+  {
+    "Phenotype": "Blood clot, DVT, bronchitis, emphysema, asthma, rhinitis, eczema, allergy diagnosed by doctor.8",
+    "log_pval": 0.0742,
+    "group": "Physical Health",
+    "p_value": 0.843,
+    "log_odds": 0.0012
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1111",
+    "log_pval": 0.2899,
+    "group": "Physical Health",
+    "p_value": 0.513,
+    "log_odds": 0.0042
+  },
+  {
+    "Phenotype": "Had other major operations.0",
+    "log_pval": 1.7696,
+    "group": "Physical Health",
+    "p_value": 0.017,
+    "log_odds": 0.014
+  },
+  {
+    "Phenotype": "Attendancedisabilitymobility allowance.0",
+    "log_pval": 0.4283,
+    "group": "Social and Economic Factors",
+    "p_value": 0.373,
+    "log_odds": 0.0076
+  },
+  {
+    "Phenotype": "Average total household income before tax.0 2 vs 4",
+    "log_pval": -1.0862,
+    "group": "Social and Economic Factors",
+    "p_value": 0.082,
+    "log_odds": -0.012
+  },
+  {
+    "Phenotype": "Illnesses of mother.2",
+    "log_pval": -2.8539,
+    "group": "Family History",
+    "p_value": 0.0014,
+    "log_odds": -0.019
+  },
+  {
+    "Phenotype": "Past tobacco smoking.0 0 vs 3",
+    "log_pval": 0.5513,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.281,
+    "log_odds": 0.0057
+  },
+  {
+    "Phenotype": "Overall health rating.0 1 vs 2",
+    "log_pval": 1.7447,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.018,
+    "log_odds": 0.014
+  },
+  {
+    "Phenotype": "Comparative body size at age 10.0 2 vs 3",
+    "log_pval": -1.5229,
+    "group": "Physical Attributes",
+    "p_value": 0.03,
+    "log_odds": -0.013
+  },
+  {
+    "Phenotype": "Use of sunuv protection.0 3 vs 4",
+    "log_pval": 0.067,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.857,
+    "log_odds": 0.001
+  },
+  {
+    "Phenotype": "Major dietary changes in the last 5 years.0 0 vs 1",
+    "log_pval": 0.1439,
+    "group": "Diet",
+    "p_value": 0.718,
+    "log_odds": 0.0024
+  },
+  {
+    "Phenotype": "Alcohol intake frequency.0 1 vs 3",
+    "log_pval": -0.0066,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.985,
+    "log_odds": -0.0001
+  },
+  {
+    "Phenotype": "Wheeze or whistling in the chest in last year.0",
+    "log_pval": 0.3335,
+    "group": "Physical Health",
+    "p_value": 0.464,
+    "log_odds": 0.0037
+  },
+  {
+    "Phenotype": "Alcohol intake versus 10 years previously.0 2 vs 3",
+    "log_pval": -0.1618,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.689,
+    "log_odds": -0.0019
+  },
+  {
+    "Phenotype": "Overall health rating.0 2 vs 3",
+    "log_pval": 0.5751,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.266,
+    "log_odds": 0.0058
+  },
+  {
+    "Phenotype": "Smoking status.0 0 vs 1",
+    "log_pval": 0.9586,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.11,
+    "log_odds": 0.0071
+  },
+  {
+    "Phenotype": "Usual side of head for mobile phone use.0 0 vs 2",
+    "log_pval": -0.295,
+    "group": "Mobile Phone Usage",
+    "p_value": 0.507,
+    "log_odds": -0.0031
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 1 vs 2",
+    "log_pval": 0.9245,
+    "group": "Physical Attributes",
+    "p_value": 0.119,
+    "log_odds": 0.0087
+  },
+  {
+    "Phenotype": "Coffee type.0 2 vs 3",
+    "log_pval": 2.4202,
+    "group": "Diet",
+    "p_value": 0.0038,
+    "log_odds": 0.017
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1465",
+    "log_pval": -0.757,
+    "group": "Physical Health",
+    "p_value": 0.175,
+    "log_odds": -0.01
+  },
+  {
+    "Phenotype": "Length of mobile phone use.0 2 vs 4",
+    "log_pval": -1.2366,
+    "group": "Mobile Phone Usage",
+    "p_value": 0.058,
+    "log_odds": -0.012
+  },
+  {
+    "Phenotype": "Long-standing illness, disability or infirmity.0",
+    "log_pval": -1.1249,
+    "group": "Physical Health",
+    "p_value": 0.075,
+    "log_odds": -0.0079
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 3 vs 4",
+    "log_pval": -0.8827,
+    "group": "Physical Attributes",
+    "p_value": 0.131,
+    "log_odds": -0.0069
+  },
+  {
+    "Phenotype": "Illnesses of father.2",
+    "log_pval": -0.8416,
+    "group": "Family History",
+    "p_value": 0.144,
+    "log_odds": -0.0086
+  },
+  {
+    "Phenotype": "Ease of skin tanning.0 2 vs 3",
+    "log_pval": 0.8508,
+    "group": "Physical Attributes",
+    "p_value": 0.141,
+    "log_odds": 0.0081
+  },
+  {
+    "Phenotype": "Breastfed as a baby.0",
+    "log_pval": -0.0443,
+    "group": "Family History",
+    "p_value": 0.903,
+    "log_odds": -0.0006
+  },
+  {
+    "Phenotype": "Hot drink temperature.0 1 vs 2",
+    "log_pval": 0.5272,
+    "group": "Diet",
+    "p_value": 0.297,
+    "log_odds": 0.0058
+  },
+  {
+    "Phenotype": "Able to confide.0 0 vs 5",
+    "log_pval": 0.025,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.944,
+    "log_odds": 0.0004
+  },
+  {
+    "Phenotype": "Electronic device use - Plays computer games.0 0 vs 1",
+    "log_pval": -0.098,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.798,
+    "log_odds": -0.0014
+  },
+  {
+    "Phenotype": "Processed meat intake.0 1 vs 3",
+    "log_pval": -0.4123,
+    "group": "Diet",
+    "p_value": 0.387,
+    "log_odds": -0.0049
+  },
+  {
+    "Phenotype": "Illnesses of father.8",
+    "log_pval": 0.1018,
+    "group": "Family History",
+    "p_value": 0.791,
+    "log_odds": 0.0014
+  },
+  {
+    "Phenotype": "Skin colour.0 2 vs 3",
+    "log_pval": -0.2457,
+    "group": "Physical Attributes",
+    "p_value": 0.568,
+    "log_odds": -0.0031
+  },
+  {
+    "Phenotype": "Pain types experienced in last month.5",
+    "log_pval": -0.0496,
+    "group": "Physical Health",
+    "p_value": 0.892,
+    "log_odds": -0.001
+  },
+  {
+    "Phenotype": "Mouthteeth dental problems.1",
+    "log_pval": -0.068,
+    "group": "Physical Health",
+    "p_value": 0.855,
+    "log_odds": -0.0012
+  },
+  {
+    "Phenotype": "Pain types experienced in last month.0",
+    "log_pval": -0.8182,
+    "group": "Physical Health",
+    "p_value": 0.152,
+    "log_odds": -0.006
+  },
+  {
+    "Phenotype": "Risk taking.0",
+    "log_pval": -0.4023,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.396,
+    "log_odds": -0.0041
+  },
+  {
+    "Phenotype": "Hot drink temperature.0 0 vs 1",
+    "log_pval": 0.1931,
+    "group": "Diet",
+    "p_value": 0.641,
+    "log_odds": 0.0027
+  },
+  {
+    "Phenotype": "Seen a psychiatrist for nerves, anxiety, tension or depression.0",
+    "log_pval": -0.1537,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.702,
+    "log_odds": -0.0024
+  },
+  {
+    "Phenotype": "Mental health - Illness, injury, bereavement, stress in last 2 years.2",
+    "log_pval": 0.341,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.456,
+    "log_odds": 0.0048
+  },
+  {
+    "Phenotype": "Social support - Leisuresocial activities.0",
+    "log_pval": -0.4202,
+    "group": "Social and Economic Factors",
+    "p_value": 0.38,
+    "log_odds": -0.0039
+  },
+  {
+    "Phenotype": "Social support - Leisuresocial activities.5",
+    "log_pval": 1.9586,
+    "group": "Social and Economic Factors",
+    "p_value": 0.011,
+    "log_odds": 0.013
+  },
+  {
+    "Phenotype": "Blood clot, DVT, bronchitis, emphysema, asthma, rhinitis, eczema, allergy diagnosed by doctor.9",
+    "log_pval": -0.6055,
+    "group": "Physical Health",
+    "p_value": 0.248,
+    "log_odds": -0.0056
+  },
+  {
+    "Phenotype": "Frequency of tenseness  restlessness in last 2 weeks.0 1 vs 2",
+    "log_pval": 0.5867,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.259,
+    "log_odds": 0.0057
+  },
+  {
+    "Phenotype": "Illnesses of mother.1",
+    "log_pval": -0.8508,
+    "group": "Family History",
+    "p_value": 0.141,
+    "log_odds": -0.0077
+  },
+  {
+    "Phenotype": "Frequency of depressed mood in last 2 weeks.0 1 vs 2",
+    "log_pval": 0.27,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.537,
+    "log_odds": 0.0033
+  },
+  {
+    "Phenotype": "Usual walking pace.0 2 vs 3",
+    "log_pval": -1.3468,
+    "group": "Physical Attributes",
+    "p_value": 0.045,
+    "log_odds": -0.0089
+  },
+  {
+    "Phenotype": "Types of physical activity in last 4 weeks.2",
+    "log_pval": -0.0867,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.819,
+    "log_odds": -0.0009
+  },
+  {
+    "Phenotype": "Mouthteeth dental problems.6",
+    "log_pval": 0.1057,
+    "group": "Physical Health",
+    "p_value": 0.784,
+    "log_odds": 0.0015
+  },
+  {
+    "Phenotype": "Frequency of tiredness  lethargy in last 2 weeks.0 1 vs 2",
+    "log_pval": 1.0605,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.087,
+    "log_odds": 0.0076
+  },
+  {
+    "Phenotype": "Maternal smoking around birth.0",
+    "log_pval": 0.0246,
+    "group": "Family History",
+    "p_value": 0.945,
+    "log_odds": 0.0003
+  },
+  {
+    "Phenotype": "Types of transport used excluding work.2",
+    "log_pval": 0.6861,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.206,
+    "log_odds": 0.0052
+  },
+  {
+    "Phenotype": "Types of physical activity in last 4 weeks.4",
+    "log_pval": 0.1818,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.658,
+    "log_odds": 0.0018
+  },
+  {
+    "Phenotype": "Seen doctor GP for nerves, anxiety, tension or depression.0",
+    "log_pval": -0.6576,
+    "group": "Mental Health and Well-being",
+    "p_value": 0.22,
+    "log_odds": -0.0053
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 1 vs 2",
+    "log_pval": 0.5171,
+    "group": "Physical Attributes",
+    "p_value": 0.304,
+    "log_odds": 0.012
+  },
+  {
+    "Phenotype": "Non-cancer illness code, self-reported.1226",
+    "log_pval": 0.4935,
+    "group": "Physical Health",
+    "p_value": 0.321,
+    "log_odds": 0.0095
+  },
+  {
+    "Phenotype": "Blood clot, DVT, bronchitis, emphysema, asthma, rhinitis, eczema, allergy diagnosed by doctor.6",
+    "log_pval": 0.0218,
+    "group": "Physical Health",
+    "p_value": 0.951,
+    "log_odds": 0.0009
+  },
+  {
+    "Phenotype": "Past tobacco smoking.0 1 vs 3",
+    "log_pval": 1.2218,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.06,
+    "log_odds": 0.013
+  },
+  {
+    "Phenotype": "Never eat eggs, dairy, wheat, sugar.5",
+    "log_pval": 0.9747,
+    "group": "Diet",
+    "p_value": 0.106,
+    "log_odds": 0.0078
+  },
+  {
+    "Phenotype": "Never eat eggs, dairy, wheat, sugar.4",
+    "log_pval": -0.6383,
+    "group": "Diet",
+    "p_value": 0.23,
+    "log_odds": -0.0062
+  },
+  {
+    "Phenotype": "Past tobacco smoking.0 0 vs 2",
+    "log_pval": 0.066,
+    "group": "Lifestyle and Behavior",
+    "p_value": 0.859,
+    "log_odds": 0.0012
+  },
+  {
+    "Phenotype": "Usual walking pace.0 1 vs 2",
+    "log_pval": -0.2495,
+    "group": "Physical Attributes",
+    "p_value": 0.563,
+    "log_odds": -0.0046
+  },
+  {
+    "Phenotype": "Hair colour natural, before greying.0 1 vs 3",
+    "log_pval": -1.9586,
+    "group": "Physical Attributes",
+    "p_value": 0.011,
+    "log_odds": -0.017
+  },
+  {
+    "Phenotype": "Blood clot, DVT, bronchitis, emphysema, asthma, rhinitis, eczema, allergy diagnosed by doctor.0",
+    "log_pval": 0.1129,
+    "group": "Physical Health",
+    "p_value": 0.771,
+    "log_odds": 0.0013
+  },
+  {
+    "Phenotype": "Salt added to food.0 1 vs 2",
+    "log_pval": -1.0555,
+    "group": "Diet",
+    "p_value": 0.088,
+    "log_odds": -0.008
+  }
+];
+    const groupColors = {
+  "Physical Attributes": "#1F77B4",
+  "Physical Health": "#FF7F0E",
+  "Mental Health and Well-being": "#2CA02C",
+  "Lifestyle and Behavior": "#D62728",
+  "Social and Economic Factors": "#9467BD",
+  "Family History": "#8C564B",
+  "Diet": "#E377C2",
+  "Mobile Phone Usage": "#7F7F7F",
+  "Cognitive Performance": "#BCBD22",
+  "Other": "#999999"
+};
+
+    function wrapLabel(label, width = 30) {
+      return label.split(" ").reduce((acc, word) => {
+        const lastLine = acc[acc.length - 1];
+        if (lastLine && (lastLine.length + word.length) <= width) {
+          acc[acc.length - 1] += " " + word;
+        } else {
+          acc.push(word);
+        }
+        return acc;
+      }, [""]).join("\n");
+    }
+
+    function updatePlot() {
+      const sortMethod = document.getElementById("sortSelect").value;
+      const nTraits = document.getElementById("nTraitsSelect").value;
+
+      if (sortMethod === "Magnitude") {
+        // Sort the fullData by absolute log_pval across all traits
+        let sorted = JSON.parse(JSON.stringify(fullData));
+        sorted.sort((a, b) => Math.abs(b.log_pval) - Math.abs(a.log_pval));
+        sorted = nTraits === "All" ? sorted : sorted.slice(0, parseInt(nTraits));
+        sorted.reverse(); // so the highest magnitude appears at the top
+
+        const x = sorted.map(d => d.log_pval);
+        const y = sorted.map(d => wrapLabel(d.Phenotype));
+        const text = sorted.map(d =>
+          "Phenotype: " + d.Phenotype + "<br>P-value: " + d.p_value.toFixed(6) + "<br>Log Odds: " + d.log_odds.toFixed(4)
+        );
+        const colors = sorted.map(d => groupColors[d.group] || "#999999");
+        const dynamicHeight = Math.min(Math.max(40 * sorted.length + 200, 400), 2000);
+
+        Plotly.newPlot("plotDiv", [{
+          type: "bar",
+          orientation: "h",
+          x: x,
+          y: y,
+          text: text,
+          hoverinfo: "text",
+          marker: { color: colors }
+        }], {
+          title: "Sort: " + sortMethod + " | Traits: " + nTraits,
+          hovermode: "closest",
+          xaxis: {
+            title: "-log10(p-value) * sign(log odds)",
+            tickangle: 0
+          },
+          yaxis: {
+            automargin: true,
+            tickangle: 0
+          },
+          margin: { l: 300, r: 50, t: 80, b: 80 },
+          height: dynamicHeight
+        });
+      } else {
+        // Group sort option: sort by group order then by magnitude within each group
+        let arr = JSON.parse(JSON.stringify(fullData));
+        const groupOrder = Object.keys(groupColors);
+        arr.sort((a, b) =>
+          groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group) ||
+          Math.abs(b.log_pval) - Math.abs(a.log_pval)
+        );
+        arr = nTraits === "All" ? arr : arr.slice(0, parseInt(nTraits));
+        arr.reverse();
+
+        const groups = arr.reduce((acc, d) => {
+          acc[d.group] = acc[d.group] || [];
+          acc[d.group].push(d);
+          return acc;
+        }, {});
+
+        const traces = Object.entries(groups).map(([grp, data]) => ({
+          type: "bar",
+          orientation: "h",
+          x: data.map(d => d.log_pval),
+          y: data.map(d => wrapLabel(d.Phenotype)),
+          text: data.map(d =>
+            "Phenotype: " + d.Phenotype + "<br>P-value: " + d.p_value.toFixed(6) + "<br>Log Odds: " + d.log_odds.toFixed(4)
+          ),
+          hoverinfo: "text",
+          marker: { color: groupColors[grp] || "#999999" },
+          name: grp
+        }));
+
+        const dynamicHeight = Math.min(Math.max(40 * arr.length + 200, 400), 2000);
+
+        Plotly.newPlot("plotDiv", traces, {
+          title: "Sort: " + sortMethod + " | Traits: " + nTraits,
+          hovermode: "closest",
+          xaxis: {
+            title: "-log10(p-value) * sign(log odds)",
+            tickangle: 0
+          },
+          yaxis: {
+            automargin: true,
+            tickangle: 0
+          },
+          margin: { l: 300, r: 50, t: 80, b: 80 },
+          height: dynamicHeight,
+          barmode: "group"
+        });
+      }
+    }
+
+    document.getElementById("sortSelect").addEventListener("change", updatePlot);
+    document.getElementById("nTraitsSelect").addEventListener("change", updatePlot);
+
+    // Initial plot
+    updatePlot();
+  </script>
+</body>
+</html>
