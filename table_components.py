@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from jinja2 import Environment, FileSystemLoader
 
 # Load the CSV files
@@ -69,7 +70,8 @@ for component in all_components:
 sorted_components = dict(sorted(components.items(), key=lambda item: int(item[0][2:])))
 
 # Environment for Jinja2
-env = Environment(loader=FileSystemLoader(searchpath=''))
+script_dir = os.path.dirname(__file__)
+env = Environment(loader=FileSystemLoader(searchpath=script_dir))
 template = env.get_template('template.html')
 
 # Render the template with the combined data

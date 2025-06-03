@@ -652,7 +652,7 @@
                     <thead class="table-light">
                         <tr>
                             <th data-column-key="GENE" data-sort-type="string">Gene ID <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
-                            <th data-column-key="GENE SYMBOL" data-sort-type="string">Gene Symbol <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
+                            <th data-column-key="GENE.SYMBOL" data-sort-type="string">Gene Symbol <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
                             <th data-column-key="CHR" data-sort-type="numeric">Chromosome <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
                             <th data-column-key="START" data-sort-type="numeric">Start <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
                             <th data-column-key="STOP" data-sort-type="numeric">End <span class="sort-arrow sort-arrow-up" data-direction="asc" title="Sort Ascending">&#x25B2;</span><span class="sort-arrow sort-arrow-down" data-direction="desc" title="Sort Descending">&#x25BC;</span></th>
@@ -794,7 +794,7 @@
                 dataArray.forEach(function(gene) {
                     let row = `<tr>
                         <td>${gene['GENE']}</td>
-                        <td>${gene['GENE SYMBOL']}</td>
+                        <td>${gene['GENE.SYMBOL']}</td>
                         <td>${gene['CHR']}</td>
                         <td>${gene['START']}</td>
                         <td>${gene['STOP']}</td>
